@@ -1,4 +1,4 @@
-package epic.weishu.me.epic;
+package me.weishu.epic;
 
 import android.os.Build;
 import android.util.Pair;

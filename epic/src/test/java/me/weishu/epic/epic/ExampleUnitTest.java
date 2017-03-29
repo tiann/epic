@@ -1,4 +1,4 @@
-package epic.weishu.me.epic;
+package me.weishu.epic.epic;
 
 import org.junit.Test;
 

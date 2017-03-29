@@ -1,4 +1,4 @@
-package epic.weishu.me.epic;
+package me.weishu.epic.epic;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("epic.weishu.me.epic", appContext.getPackageName());
+        assertEquals("epic.weishu.me.epic.test", appContext.getPackageName());
     }
 }

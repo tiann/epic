@@ -1,4 +1,4 @@
-package epic.weishu.me.epic;
+package me.weishu.epic;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -57,6 +57,6 @@ public class MainActivity extends Activity {
 
     public void helloArt() {
         Toast.makeText(this, "hello art!", Toast.LENGTH_SHORT).show();
-        Hook.callOrigin(this, null);
+        Hook.callOrigin(this);
     }
 }
