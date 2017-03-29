@@ -166,12 +166,12 @@ public class Hook {
         static final String UNSAFE_CLASS = "sun.misc.Unsafe";
         static Object THE_UNSAFE;
 
-        private static boolean is64Bit;
+        private static boolean is64Bit = false;
 
         static {
             THE_UNSAFE = Reflection.get(null, UNSAFE_CLASS, "THE_ONE", null);
             Object runtime = Reflection.call(null, "dalvik.system.VMRuntime", "getRuntime", null, null, null);
-            is64Bit = (Boolean) Reflection.call(null, "dalvik.system.VMRuntime", "is64Bit", runtime, null, null);
+            // is64Bit = (Boolean) Reflection.call(null, "dalvik.system.VMRuntime", "is64Bit", runtime, null, null);
         }
 
         public static long getObjectAddress(Object o) {
