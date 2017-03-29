@@ -3,10 +3,13 @@ package epic.weishu.me.epic;
 import android.os.Build;
 import android.util.Pair;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,8 +44,8 @@ public class Hook {
     }
 
     private static Method backUp(Method origin, Method replace) {
-        if (Build.VERSION.SDK_INT < 23) {
-            try {
+        try {
+            if (Build.VERSION.SDK_INT < 23) {
                 // java.lang.reflect.ArtMethod
                 Class<?> artMethodClass = Class.forName("java.lang.reflect.ArtMethod");
                 Field accessFlagsField = artMethodClass.getDeclaredField("accessFlags");
@@ -62,12 +65,67 @@ public class Hook {
                 accessFlagsField.set(newArtMethod, accessFlags);
 
                 return newMethod;
-            } catch (Throwable e) {
-                e.printStackTrace();
+            } else {
+                // AbstractMethod
+                Class<?> abstractMethodClass = Method.class.getSuperclass();
+                Field accessFlagsField = abstractMethodClass.getDeclaredField("accessFlags");
+                Field artMethodField = abstractMethodClass.getDeclaredField("artMethod");
+                accessFlagsField.setAccessible(true);
+                artMethodField.setAccessible(true);
+
+                // make the construct accessible, we can not just use `setAccessible`
+                Constructor<Method> methodConstructor = Method.class.getDeclaredConstructor();
+                Field override = AccessibleObject.class.getDeclaredField(
+                        Build.VERSION.SDK_INT == Build.VERSION_CODES.M ? "flag" : "override");
+                override.setAccessible(true);
+                override.set(methodConstructor, true);
+
+                // clone the origin method
+                Method newMethod = methodConstructor.newInstance();
+                newMethod.setAccessible(true);
+                for (Field field : abstractMethodClass.getDeclaredFields()) {
+                    field.setAccessible(true);
+                    field.set(newMethod, field.get(origin));
+                }
+
+                // allocate new artMethod struct, we can not use memory managed by JVM
+                ByteBuffer artMethod = ByteBuffer.allocateDirect((int) MethodInspect.getArtMethodSize());
+                Long artMethodAddr = (Long) Reflection.call(artMethod.getClass(), null, "address", artMethod, null, null);
+                Memory.memcpy(artMethodAddr, MethodInspect.getMethodAddress(origin),
+                        MethodInspect.getArtMethodSize());
+
+                // replace the artMethod of our new method
+                artMethodField.set(newMethod, artMethodAddr);
+
+                // modify the access flag of the new method
+                Integer accessFlags = (Integer) accessFlagsField.get(origin);
+                int privateAccFlag = accessFlags & ~Modifier.PUBLIC | Modifier.PRIVATE;
+                accessFlagsField.set(newMethod, privateAccFlag);
+
+                final int ACC_FLAG_OFFSET = 4;
+                // 1. try big endian
+                artMethod.order(ByteOrder.BIG_ENDIAN);
+                int nativeAccFlags = artMethod.getInt(ACC_FLAG_OFFSET);
+                if (nativeAccFlags == accessFlags) {
+                    // hit!
+                    artMethod.putInt(ACC_FLAG_OFFSET, privateAccFlag);
+                } else {
+                    // 2. try little endian
+                    artMethod.order(ByteOrder.LITTLE_ENDIAN);
+                    nativeAccFlags = artMethod.getInt(ACC_FLAG_OFFSET);
+                    if (nativeAccFlags == accessFlags) {
+                        artMethod.putInt(ACC_FLAG_OFFSET, privateAccFlag);
+                    } else {
+                        // the offset is error!
+                        throw new RuntimeException("native set access flags error!");
+                    }
+                }
+
+                return newMethod;
             }
-        } else {
+        } catch (Throwable e) {
+            throw new UnsupportedException("can not backup method.", e);
         }
-        return null;
     }
     private static class Reflection {
         public static Object call(Class<?> clazz, String className, String methodName, Object receiver,

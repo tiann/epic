@@ -57,5 +57,6 @@ public class MainActivity extends Activity {
 
     public void helloArt() {
         Toast.makeText(this, "hello art!", Toast.LENGTH_SHORT).show();
+        Hook.callOrigin(this, null);
     }
 }
