@@ -164,21 +164,13 @@ public class Hook {
     static class Unsafe {
 
         static final String UNSAFE_CLASS = "sun.misc.Unsafe";
-        static Object THE_UNSAFE;
-
-        private static boolean is64Bit = false;
-
-        static {
-            THE_UNSAFE = Reflection.get(null, UNSAFE_CLASS, "THE_ONE", null);
-            Object runtime = Reflection.call(null, "dalvik.system.VMRuntime", "getRuntime", null, null, null);
-            // is64Bit = (Boolean) Reflection.call(null, "dalvik.system.VMRuntime", "is64Bit", runtime, null, null);
-        }
+        static Object THE_UNSAFE = Reflection.get(null, UNSAFE_CLASS, "THE_ONE", null);
 
         public static long getObjectAddress(Object o) {
             Object[] objects = {o};
             Integer baseOffset = (Integer) Reflection.call(null, UNSAFE_CLASS,
                     "arrayBaseOffset", THE_UNSAFE, new Class[]{Class.class}, new Object[]{Object[].class});
-            return ((Number) Reflection.call(null, UNSAFE_CLASS, is64Bit ? "getLong" : "getInt", THE_UNSAFE,
+            return ((Number) Reflection.call(null, UNSAFE_CLASS, "getInt", THE_UNSAFE,
                     new Class[]{Object.class, long.class}, new Object[]{objects, baseOffset.longValue()})).longValue();
         }
     }
