@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.MappedByteBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -90,7 +91,14 @@ public class Hook {
 
                 // allocate new artMethod struct, we can not use memory managed by JVM
                 ByteBuffer artMethod = ByteBuffer.allocateDirect((int) MethodInspect.getArtMethodSize());
-                Long artMethodAddr = (Long) Reflection.call(artMethod.getClass(), null, "address", artMethod, null, null);
+                Long artMethodAddr;
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                    // Below Android N, the jdk implementation is not openjdk
+                    Object memoryBlock = Reflection.get(MappedByteBuffer.class, null, "block", artMethod);
+                    artMethodAddr = (Long) Reflection.call(memoryBlock.getClass(), null, "toLong", memoryBlock, null, null);
+                } else {
+                    artMethodAddr = (Long) Reflection.call(artMethod.getClass(), null, "address", artMethod, null, null);
+                }
                 Memory.memcpy(artMethodAddr, MethodInspect.getMethodAddress(origin),
                         MethodInspect.getArtMethodSize());
 
