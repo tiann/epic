@@ -3,6 +3,9 @@ package me.weishu.epic;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -14,6 +17,8 @@ import java.lang.reflect.Method;
  */
 
 public class MainActivity extends Activity {
+
+    WebView mWebView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +50,40 @@ public class MainActivity extends Activity {
             }
         });
 
+        Button loadUrl = new Button(this);
+        loadUrl.setText("load url");
+        loadUrl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mWebView.loadUrl("http://www.baidu.com");
+            }
+        });
+
+        Button hookLoadUrl = new Button(this);
+        hookLoadUrl.setText("hook loadUrl");
+        hookLoadUrl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Method origin = WebView.class.getDeclaredMethod("loadUrl", String.class);
+                    Method replace = MainActivity.class.getDeclaredMethod("interceptLoadUrl");
+                    Hook.hook(origin, replace);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        mWebView = new WebView(this);
+        mWebView.setWebViewClient(new WebViewClient());
+        mWebView.setWebChromeClient(new WebChromeClient());
+
         layout.addView(test);
         layout.addView(hook);
+        layout.addView(loadUrl);
+        layout.addView(hookLoadUrl);
+        layout.addView(mWebView);
         setContentView(layout);
-
     }
 
     public void helloWorld() {
@@ -58,5 +93,10 @@ public class MainActivity extends Activity {
     public void helloArt() {
         Toast.makeText(this, "hello art!", Toast.LENGTH_SHORT).show();
         Hook.callOrigin(this);
+    }
+
+    public void interceptLoadUrl() {
+        // 可以理解为，现在这个方法直接就在WebView这个类里面；
+        Hook.callOrigin(this, "http://www.so.com");
     }
 }
