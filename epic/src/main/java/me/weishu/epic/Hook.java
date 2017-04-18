@@ -1,6 +1,7 @@
 package me.weishu.epic;
 
 import android.os.Build;
+import android.util.Log;
 import android.util.Pair;
 
 import java.lang.reflect.AccessibleObject;
@@ -8,9 +9,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.MappedByteBuffer;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,6 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 
 public class Hook {
+
+    private static final String TAG = "Hook";
 
     private static Map<Pair<String, String>, Method> sBackups = new ConcurrentHashMap<>();
 
@@ -90,30 +94,41 @@ public class Hook {
                 }
 
                 // allocate new artMethod struct, we can not use memory managed by JVM
-                ByteBuffer artMethod = ByteBuffer.allocateDirect((int) MethodInspect.getArtMethodSize());
-                Long artMethodAddr;
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                int artMethodSize = (int) MethodInspect.getArtMethodSize();
+                ByteBuffer artMethod = ByteBuffer.allocateDirect(artMethodSize);
+                Long artMethodAddress;
+                int ACC_FLAG_OFFSET;
+                if (Build.VERSION.SDK_INT < 24) {
                     // Below Android N, the jdk implementation is not openjdk
-                    Object memoryBlock = Reflection.get(MappedByteBuffer.class, null, "block", artMethod);
-                    artMethodAddr = (Long) Reflection.call(memoryBlock.getClass(), null, "toLong", memoryBlock, null, null);
+                    artMethodAddress = (Long) Reflection.get(Buffer.class, null, "effectiveDirectAddress", artMethod);
+                    // http://androidxref.com/6.0.0_r1/xref/art/runtime/art_method.h
+                    // GCRoot * 3, sizeof(GCRoot) = sizeof(mirror::CompressedReference) = sizeof(mirror::ObjectReference) = sizeof(uint32_t) = 4
+                    ACC_FLAG_OFFSET = 12;
                 } else {
-                    artMethodAddr = (Long) Reflection.call(artMethod.getClass(), null, "address", artMethod, null, null);
+                    artMethodAddress = (Long) Reflection.call(artMethod.getClass(), null, "address", artMethod, null, null);
+                    // http://androidxref.com/7.0.0_r1/xref/art/runtime/art_method.h
+                    // sizeof(GCRoot) = 4
+                    ACC_FLAG_OFFSET = 4;
                 }
-                Memory.memcpy(artMethodAddr, MethodInspect.getMethodAddress(origin),
-                        MethodInspect.getArtMethodSize());
+                Memory.memcpy(artMethodAddress, MethodInspect.getMethodAddress(origin), artMethodSize);
 
+                byte[] newMethodBytes = new byte[artMethodSize];
+                artMethod.get(newMethodBytes);
+                Log.d(TAG, "new: " + Arrays.toString(newMethodBytes));
+                Log.i(TAG, "origin:" + Arrays.toString(MethodInspect.getMethodBytes(origin)));
                 // replace the artMethod of our new method
-                artMethodField.set(newMethod, artMethodAddr);
+                artMethodField.set(newMethod, artMethodAddress);
 
                 // modify the access flag of the new method
                 Integer accessFlags = (Integer) accessFlagsField.get(origin);
+                Log.d(TAG, "Acc:" + accessFlags);
                 int privateAccFlag = accessFlags & ~Modifier.PUBLIC | Modifier.PRIVATE;
                 accessFlagsField.set(newMethod, privateAccFlag);
 
-                final int ACC_FLAG_OFFSET = 4;
                 // 1. try big endian
                 artMethod.order(ByteOrder.BIG_ENDIAN);
                 int nativeAccFlags = artMethod.getInt(ACC_FLAG_OFFSET);
+                Log.d(TAG, "bitendian:" + nativeAccFlags);
                 if (nativeAccFlags == accessFlags) {
                     // hit!
                     artMethod.putInt(ACC_FLAG_OFFSET, privateAccFlag);
@@ -121,6 +136,7 @@ public class Hook {
                     // 2. try little endian
                     artMethod.order(ByteOrder.LITTLE_ENDIAN);
                     nativeAccFlags = artMethod.getInt(ACC_FLAG_OFFSET);
+                    Log.d(TAG, "littleendian:" + nativeAccFlags);
                     if (nativeAccFlags == accessFlags) {
                         artMethod.putInt(ACC_FLAG_OFFSET, privateAccFlag);
                     } else {
