@@ -1,0 +1,2 @@
+#! /bin/sh
+cmake -DCMAKE_TOOLCHAIN_FILE=$ANDROID_SDK/ndk-bundle/build/cmake/android.toolchain.cmake -DANDROID_TOOLCHAIN=gcc -H. -Bbuild && cd build && make
