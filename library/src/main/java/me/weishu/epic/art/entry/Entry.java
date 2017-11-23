@@ -136,7 +136,7 @@ public class Entry {
 
         final int sp = ByteBuffer.wrap(EpicNative.get(struct, 4)).order(ByteOrder.LITTLE_ENDIAN).getInt();
 
-        Logger.i(TAG, "stack:" + Debug.hexdump(EpicNative.get(sp, 96), 0));
+        // Logger.i(TAG, "stack:" + Debug.hexdump(EpicNative.get(sp, 96), 0));
 
         final byte[] rr1 = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(r1).array();
         final byte[] r2 = EpicNative.get(struct + 4, 4);
