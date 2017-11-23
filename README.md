@@ -33,7 +33,7 @@ Gradle dependency like following(jcenter):
 
 ```groovy
 dependencies {
-    compile 'me.weishu:epic:0.1.2@aar'
+    compile 'me.weishu:epic:0.1.3@aar'
 }
 ```
 
