@@ -1,1 +1,1 @@
-include ':app', ':epic'
+include ':app', ':library'
