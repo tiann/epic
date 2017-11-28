@@ -270,6 +270,18 @@ public class ArtMethod {
     }
 
     /**
+     * get the exception declared by the method/constructor
+     * @return the array of declared exception.
+     */
+    public Class<?>[] getExceptionTypes() {
+        if (constructor != null) {
+            return constructor.getExceptionTypes();
+        } else {
+            return method.getExceptionTypes();
+        }
+    }
+
+    /**
      * @return the origin method/constructor
      */
     public Object getExecutable() {
