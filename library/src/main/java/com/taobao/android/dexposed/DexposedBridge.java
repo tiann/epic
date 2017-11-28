@@ -190,18 +190,20 @@ public final class DexposedBridge {
 	}
 
 
-	public static Object handleHookedArtMethod(Object artmethod, Object thisObject, Object[] args) {
+	public static Object handleHookedArtMethod(Object artMethodObject, Object thisObject, Object[] args) {
 
 		CopyOnWriteSortedSet<XC_MethodHook> callbacks;
+
+		ArtMethod artmethod = (ArtMethod ) artMethodObject;
 		synchronized (hookedMethodCallbacks) {
-			callbacks = hookedMethodCallbacks.get(((ArtMethod) artmethod).getExecutable());
+			callbacks = hookedMethodCallbacks.get(artmethod.getExecutable());
 		}
 		Object[] callbacksSnapshot = callbacks.getSnapshot();
 		final int callbacksLength = callbacksSnapshot.length;
-		Logger.d(TAG, "callbacksLength:" + callbacksLength);
+		Logger.d(TAG, "callbacksLength:" + callbacksLength +  ", this:" + thisObject + ", args:" + Arrays.toString(args));
 		if (callbacksLength == 0) {
 			try {
-				ArtMethod method = Epic.getBackMethod((ArtMethod) artmethod);
+				ArtMethod method = Epic.getBackMethod(artmethod);
 				return method.invoke(thisObject, args);
 			} catch (Exception e) {
 				log(e.getCause());
@@ -209,7 +211,7 @@ public final class DexposedBridge {
 		}
 
 		MethodHookParam param = new MethodHookParam();
-		param.method  = (Member) ((ArtMethod) artmethod).getExecutable();
+		param.method  = (Member) (artmethod).getExecutable();
 		param.thisObject = thisObject;
 		param.args = args;
 
@@ -237,8 +239,7 @@ public final class DexposedBridge {
 		// call original method if not requested otherwise
 		if (!param.returnEarly) {
 			try {
-				ArtMethod method = Epic.getBackMethod((ArtMethod) artmethod);
-
+				ArtMethod method = Epic.getBackMethod(artmethod);
 				Object result = method.invoke(thisObject, args);
 				param.setResult(result);
 			} catch (Exception e) {
@@ -266,17 +267,39 @@ public final class DexposedBridge {
 			}
 		} while (--afterIdx >= 0);
 
-		// return
-		Log.w(TAG, "prepare return!!");
 		if (param.hasThrowable()) {
-			// throw new RuntimeException(param.getThrowable());
-			Log.w(TAG, "has throwable!!");
-			 return null;
-		}else {
+			final Throwable throwable = param.getThrowable();
+			if (throwable instanceof IllegalAccessException || throwable instanceof InvocationTargetException
+					|| throwable instanceof InstantiationException) {
+				// reflect exception, get the origin cause
+				final Throwable cause = throwable.getCause();
+
+				// We can not change the exception flow of origin call, rethrow
+				Log.i(TAG, "origin call throw exception (not a real crash, just record for debug):", cause);
+				DexposedBridge.<RuntimeException>throwNoCheck(param.getThrowable().getCause(), null);
+				return null; //never reach.
+			} else {
+				// the exception cause by epic self, just log.
+				Logger.w(TAG, "epic cause exception in call bridge!!");
+			}
+			return null; // never reached.
+		} else {
 			final Object result = param.getResult();
 			Log.i(TAG, "return :" + result);
 			return result;
 		}
+	}
+
+	/**
+	 * Just for throw an checked exception without check
+	 * @param exception The checked exception.
+	 * @param dummy dummy.
+	 * @param <T> fake type
+	 * @throws T the checked exception.
+	 */
+	@SuppressWarnings("unchecked")
+	private static <T extends Throwable> void throwNoCheck(Throwable exception, Object dummy) throws T {
+		throw (T) exception;
 	}
 
 	/**
