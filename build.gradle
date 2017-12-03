@@ -24,6 +24,9 @@ allprojects {
             name 'Google'
         }
     }
+    tasks.withType(Javadoc) {
+        enabled = false
+    }
 }
 
 task clean(type: Delete) {
