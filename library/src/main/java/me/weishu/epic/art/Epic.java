@@ -17,7 +17,6 @@
 package me.weishu.epic.art;
 
 import android.os.Build;
-import android.util.Log;
 
 import com.taobao.android.dexposed.utility.Debug;
 import com.taobao.android.dexposed.utility.Logger;
@@ -136,7 +135,7 @@ public final class Epic {
         Trampoline trampoline = scripts.get(identifier);
 
         boolean ret = trampoline.install();
-        Logger.i(TAG, "hook Method result:" + ret);
+        Logger.d(TAG, "hook Method result:" + ret);
         return ret;
     }
 
@@ -193,7 +192,7 @@ public final class Epic {
         long sizeInfo1 = entryPoint - 4;
         byte[] bytes = EpicNative.get(sizeInfo1, 4);
         int size = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getInt();
-        Log.i(TAG, "getQuickCompiledCodeSize: " + size);
+        Logger.d(TAG, "getQuickCompiledCodeSize: " + size);
         return size;
     }
 

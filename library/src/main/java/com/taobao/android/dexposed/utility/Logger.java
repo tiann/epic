@@ -7,12 +7,14 @@ import android.util.Log;
  */
 public class Logger {
 
-    public static final boolean DEBUG = Debug.DEBUG;
+    private static final boolean DEBUG = Debug.DEBUG;
+
+    private static final boolean INFO = true;
 
     public static final String preFix = "epic.";
 
     public static void i(String tag, String msg) {
-        if (DEBUG) {
+        if (INFO) {
             Log.i(preFix + tag, msg);
         }
     }
@@ -24,7 +26,7 @@ public class Logger {
     }
 
     public static void w(String tag, String msg) {
-        if (DEBUG) {
+        if (Debug.WARN) {
             Log.w(preFix + tag, msg);
         }
     }

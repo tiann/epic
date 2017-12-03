@@ -16,8 +16,6 @@
 
 package me.weishu.epic.art.entry;
 
-import android.util.Log;
-
 import com.taobao.android.dexposed.DexposedBridge;
 import com.taobao.android.dexposed.XposedHelpers;
 import com.taobao.android.dexposed.utility.Logger;
@@ -228,9 +226,7 @@ public class Entry64 {
         } else if (returnType == short.class) {
             return onHookShort(artMethod, receiver, arguments);
         } else if (returnType == int.class) {
-            final int i = onHookInt(artMethod, receiver, arguments);
-            Log.i(TAG, "leave bridge :" + i);
-            return i;
+            return onHookInt(artMethod, receiver, arguments);
         } else if (returnType == long.class) {
             return onHookLong(artMethod, receiver, arguments);
         } else if (returnType == float.class) {

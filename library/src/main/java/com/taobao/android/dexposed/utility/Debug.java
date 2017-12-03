@@ -24,20 +24,23 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
-import me.weishu.epic.art.EpicNative;
 import me.weishu.epic.art.method.ArtMethod;
 
 public final class Debug {
     private static final String TAG = "Dexposed";
-    private static final long HEXDUMP_BYTES_PER_LINE = 16;
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public static final boolean WARN = true;
 
+    private static final String RELASE_WRAN_STRING = "none in release mode.";
     private Debug() {
     }
 
     public static String addrHex(long i) {
+        if (!DEBUG) {
+            return RELASE_WRAN_STRING;
+        }
+
         if (Runtime.is64Bit()) {
             return longHex(i);
         } else {
@@ -71,21 +74,9 @@ public final class Debug {
         return sb.toString();
     }
     public static String hexdump(byte[] bytes, long start) {
-//        StringBuilder sb = new StringBuilder();
-//        for (int i = 0 - (int) (start % HEXDUMP_BYTES_PER_LINE); i < bytes.length; i++) {
-//            long num = Math.abs((start + i) % HEXDUMP_BYTES_PER_LINE);
-//            if (num == 0 && sb.length() > 0)
-//                sb.append('\n');
-//            if (num == 0)
-//                sb.append(addrHex(start + i)).append(": ");
-//            if (num == 8)
-//                sb.append(" ");
-//            if (i >= 0)
-//                sb.append(Debug.byteHex(bytes[i])).append(" ");
-//            else
-//                sb.append("   ");
-//        }
-//        return sb.toString().trim();
+        if (!DEBUG) {
+            return RELASE_WRAN_STRING;
+        }
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < bytes.length; i++) {
             if (i % 8 == 0) {
@@ -126,11 +117,4 @@ public final class Debug {
         }
     }
 
-    public static void testGetObject() {
-        Object o = new Object();
-        long addr = Unsafe.getObjectAddress(o);
-        Log.i(TAG, "object1:" + o);
-        Log.i(TAG, "object address:" + Long.toHexString(addr));
-        Log.i(TAG, "object2" + EpicNative.getObject(addr));
-    }
 }

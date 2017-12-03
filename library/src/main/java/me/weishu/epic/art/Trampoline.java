@@ -100,12 +100,12 @@ class Trampoline {
     }
 
     private byte[] create() {
-        Log.i(TAG, "create trampoline.");
+        Logger.d(TAG, "create trampoline.");
         byte[] mainPage = new byte[getSize()];
         int offset = 0;
 
         byte[] script = createTrampoline(artOrigin);
-        Log.i(TAG, "trampoline size:" + script.length);
+        Logger.d(TAG, "trampoline size:" + script.length);
         System.arraycopy(script, 0, mainPage, offset, script.length);
         offset += script.length;
 
