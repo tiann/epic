@@ -325,7 +325,7 @@ public class ArtMethod {
      */
     public void ensureResolved() {
         if (!Modifier.isStatic(getModifiers())) {
-            Log.i(TAG, "not static, ignore.");
+            Logger.d(TAG, "not static, ignore.");
             return;
         }
         final Class<?>[] parameterTypes = getParameterTypes();
@@ -339,9 +339,9 @@ public class ArtMethod {
 
         try {
             invoke(null, args);
-            Log.i(TAG, "ensure resolved");
+            Logger.d(TAG, "ensure resolved");
         } catch (Throwable e) {
-            Log.e(TAG, "ensure resolved failed.");
+            Logger.e(TAG, "ensure resolved failed(not a real crash).", e);
         }
     }
 

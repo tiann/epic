@@ -162,7 +162,7 @@ public final class DexposedBridge {
 		
 		XC_MethodHook callback = (XC_MethodHook) parameterTypesAndCallback[parameterTypesAndCallback.length-1];
 		Method m = XposedHelpers.findMethodExact(clazz, methodName, parameterTypesAndCallback);
-		Logger.i(TAG, "findMethod: " + m.toGenericString());
+		Logger.i(TAG, "findAndHookMethod: " + m.toGenericString());
 		Unhook unhook = hookMethod(m, callback);
 		if (!(callback instanceof XC_MethodKeepHook
 				|| callback instanceof XC_MethodKeepReplacement)) {
@@ -275,7 +275,7 @@ public final class DexposedBridge {
 				final Throwable cause = throwable.getCause();
 
 				// We can not change the exception flow of origin call, rethrow
-				Log.i(TAG, "origin call throw exception (not a real crash, just record for debug):", cause);
+				Logger.e(TAG, "origin call throw exception (not a real crash, just record for debug):", cause);
 				DexposedBridge.<RuntimeException>throwNoCheck(param.getThrowable().getCause(), null);
 				return null; //never reach.
 			} else {
@@ -285,7 +285,7 @@ public final class DexposedBridge {
 			return null; // never reached.
 		} else {
 			final Object result = param.getResult();
-			Log.i(TAG, "return :" + result);
+			Logger.d(TAG, "return :" + result);
 			return result;
 		}
 	}

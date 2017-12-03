@@ -22,7 +22,6 @@ import com.taobao.android.dexposed.utility.Logger;
 
 import java.lang.reflect.Member;
 
-import static com.taobao.android.dexposed.utility.Debug.DEBUG;
 import static com.taobao.android.dexposed.utility.Debug.addrHex;
 
 
@@ -102,13 +101,9 @@ public final class EpicNative {
     }
 
     public static byte[] get(long src, int length) {
-        if (DEBUG) {
-            Logger.d(TAG, "Reading " + length + " bytes from: " + addrHex(src));
-        }
+        Logger.d(TAG, "Reading " + length + " bytes from: " + addrHex(src));
         byte[] bytes = memget(src, length);
-        if (DEBUG) {
-            Logger.d(TAG, Debug.hexdump(bytes, src));
-        }
+        Logger.d(TAG, Debug.hexdump(bytes, src));
         return bytes;
     }
 

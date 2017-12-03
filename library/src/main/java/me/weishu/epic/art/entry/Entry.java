@@ -17,7 +17,6 @@
 package me.weishu.epic.art.entry;
 
 import android.os.Build;
-import android.util.Log;
 import android.util.Pair;
 
 import com.taobao.android.dexposed.DexposedBridge;
@@ -402,7 +401,7 @@ public class Entry {
     public static Method getBridgeMethod(Class<?> returnType) {
         try {
             final String bridgeMethod = bridgeMethodMap.get(returnType.isPrimitive() ? returnType : Object.class);
-            Log.i(TAG, "bridge method:" + bridgeMethod + ", map:" + bridgeMethodMap);
+            Logger.i(TAG, "bridge method:" + bridgeMethod + ", map:" + bridgeMethodMap);
             Method method = Entry.class.getDeclaredMethod(bridgeMethod, int.class, int.class, int.class);
             method.setAccessible(true);
             return method;
