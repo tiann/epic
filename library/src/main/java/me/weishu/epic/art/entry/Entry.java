@@ -289,6 +289,12 @@ public class Entry {
                         if (arg1TypeLength == 4 && arg2TypeLength == 8) {
                             isR3Grabbed = false;
                         }
+
+                        if (numberOfArgs == 2 && arg1TypeLength == 8 && arg2TypeLength == 8) {
+                            // in this case, we have no reference register to local r3, just hard code now :(
+                            System.arraycopy(EpicNative.get(sp + 44, 4), 0, argBytes, 12, 4);
+                            isR3Grabbed = false;
+                        }
                     }
                     if (numberOfArgs >= 3) {
                         int arg1TypeLength = getTypeLength(typeOfArgs[0]);
