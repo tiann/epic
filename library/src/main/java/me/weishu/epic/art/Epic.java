@@ -60,7 +60,7 @@ public final class Epic {
         if (isArm) {
             if (Runtime.is64Bit()) {
                 switch (apiLevel) {
-                    case Build.VERSION_CODES.LOLLIPOP_MR1:
+                    case Build.VERSION_CODES.M:
                         ShellCode = new Arm64ForM();
                         break;
                     case Build.VERSION_CODES.N:
