@@ -1,8 +1,7 @@
 package me.weishu.epic.samples.tests;
 
+import android.util.Log;
 import android.widget.Toast;
-
-import com.taobao.android.dexposed.utility.Logger;
 
 import me.weishu.epic.samples.MainApplication;
 
@@ -28,7 +27,7 @@ public abstract class TestCase {
             validate = predicate();
         } catch (Throwable e) {
             validate = false;
-            Logger.e(TAG, "error happened:", e);
+            Log.e(TAG, "error happened:", e);
         }
         if (!validate) {
             Toast.makeText(MainApplication.getAppContext(), "测试不通过。", Toast.LENGTH_SHORT).show();

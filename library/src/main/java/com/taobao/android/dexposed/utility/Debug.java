@@ -24,13 +24,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
+import me.weishu.epic.BuildConfig;
 import me.weishu.epic.art.method.ArtMethod;
 
 public final class Debug {
     private static final String TAG = "Dexposed";
 
-    public static final boolean DEBUG = false;
-    public static final boolean WARN = true;
+    public static final boolean DEBUG = BuildConfig.DEBUG;
 
     private static final String RELASE_WRAN_STRING = "none in release mode.";
     private Debug() {
@@ -116,5 +116,4 @@ public final class Debug {
             }
         }
     }
-
 }
