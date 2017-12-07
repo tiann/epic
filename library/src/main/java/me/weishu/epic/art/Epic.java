@@ -56,12 +56,18 @@ public final class Epic {
 
     static {
         boolean isArm = true; // TODO: 17/11/21 TODO
+        int apiLevel = Build.VERSION.SDK_INT;
         if (isArm) {
             if (Runtime.is64Bit()) {
-                if (Build.VERSION.SDK_INT == 23) {
-                    ShellCode = new Arm64ForM();
-                } else if (Build.VERSION.SDK_INT == 24 || Build.VERSION.SDK_INT == 25) {
-                    ShellCode = new Arm64();
+                switch (apiLevel) {
+                    case Build.VERSION_CODES.LOLLIPOP_MR1:
+                        ShellCode = new Arm64ForM();
+                        break;
+                    case Build.VERSION_CODES.N:
+                    case Build.VERSION_CODES.N_MR1:
+                    case Build.VERSION_CODES.O:
+                        ShellCode = new Arm64();
+                        break;
                 }
             } else if (Runtime.isThumb2()) {
                 ShellCode = new Thumb2();
@@ -70,9 +76,9 @@ public final class Epic {
             }
         }
         if (ShellCode == null) {
-            throw new RuntimeException("Do not support this ARCH now!! API LEVEL:" + Build.VERSION.SDK_INT);
+            throw new RuntimeException("Do not support this ARCH now!! API LEVEL:" + apiLevel);
         }
-        Logger.d(TAG, "Using: " + ShellCode.getName());
+        Logger.i(TAG, "Using: " + ShellCode.getName());
     }
 
     public static boolean hookMethod(Constructor origin) {
