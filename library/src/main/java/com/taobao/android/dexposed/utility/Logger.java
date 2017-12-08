@@ -2,14 +2,12 @@ package com.taobao.android.dexposed.utility;
 
 import android.util.Log;
 
-import me.weishu.epic.BuildConfig;
-
 /**
  * Created by weishu on 17/11/10.
  */
 public class Logger {
 
-    private static final boolean DEBUG = BuildConfig.DEBUG;
+    private static final boolean DEBUG = Debug.DEBUG;
 
     public static final String preFix = "epic.";
 

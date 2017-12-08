@@ -200,7 +200,7 @@ public final class DexposedBridge {
 		}
 		Object[] callbacksSnapshot = callbacks.getSnapshot();
 		final int callbacksLength = callbacksSnapshot.length;
-		Logger.d(TAG, "callbacksLength:" + callbacksLength +  ", this:" + thisObject + ", args:" + Arrays.toString(args));
+		//Logger.d(TAG, "callbacksLength:" + callbacksLength +  ", this:" + thisObject + ", args:" + Arrays.toString(args));
 		if (callbacksLength == 0) {
 			try {
 				ArtMethod method = Epic.getBackMethod(artmethod);
