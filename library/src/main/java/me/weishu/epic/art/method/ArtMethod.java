@@ -30,8 +30,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
 
 import me.weishu.epic.art.EpicNative;
 
@@ -168,19 +166,6 @@ public class ArtMethod {
         }
     }
 
-
-    private static Map<Class<?>, Object> defaultValue = new HashMap<Class<?>, Object>() {{
-        put(boolean.class, false);
-        put(byte.class, 0);
-        put(short.class, 0);
-        put(int.class, 0x1);
-        put(float.class, 0f);
-        put(double.class, 0);
-        put(long.class, 0);
-        put(String.class, "");
-        put(Object.class, new Object());
-    }};
-
     /**
      * make the constructor or method accessible
      * @param accessible accessible
@@ -283,6 +268,14 @@ public class ArtMethod {
         }
     }
 
+    public String toGenericString() {
+        if (constructor != null) {
+            return constructor.toGenericString();
+        } else {
+            return method.toGenericString();
+        }
+    }
+
     /**
      * @return the origin method/constructor
      */
@@ -330,20 +323,12 @@ public class ArtMethod {
             Logger.d(TAG, "not static, ignore.");
             return;
         }
-        final Class<?>[] parameterTypes = getParameterTypes();
-        int numberOfParams = parameterTypes.length;
-        Object[] args = new Object[parameterTypes.length];
-        for (int i = 0; i < numberOfParams; i++) {
-            Class<?> type = parameterTypes[i];
-            type = type.isPrimitive() ? type : Object.class;
-            args[i] = defaultValue.get(type);
-        }
 
         try {
-            invoke(null, args);
+            invoke(null);
             Logger.d(TAG, "ensure resolved");
-        } catch (Throwable e) {
-            Logger.e(TAG, "ensure resolved failed(not a real crash).", e);
+        } catch (Exception ignored) {
+            // we should never make a successful call.
         }
     }
 
