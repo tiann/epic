@@ -95,8 +95,8 @@ class Offset {
         if (offset.length == BitWidth.DWORD) {
             int intValue = (int) value;
             long highest4Bytes = value >>> 32;
-            if (intValue < 0 && highest4Bytes == 0xFFFFFFFF ||
-                    intValue >= 0 && highest4Bytes == 0x0) {
+            if (intValue < 0 && highest4Bytes == 0xFFFFFFFFL ||
+                    intValue >= 0 && highest4Bytes == 0x0L) {
                 bytes = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(intValue).array();
             } else {
                 throw new IllegalStateException("overflow may occur");
