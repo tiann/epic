@@ -93,10 +93,13 @@ class Offset {
         long address = base + offset.offset;
         byte[] bytes;
         if (offset.length == BitWidth.DWORD) {
-            if (value > 0xFFFFFFFF) {
-                throw new IllegalStateException("overflow may occured");
+            int intValue = (int) value;
+            long highest4Bytes = value >> 32;
+            if (intValue < 0 && highest4Bytes == 0xFFFFFFFF ||
+                    intValue >= 0 && highest4Bytes == 0x0) {
+                bytes = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(intValue).array();
             } else {
-                bytes = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt((int) value).array();
+                throw new IllegalStateException("overflow may occur");
             }
         } else {
             bytes = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(value).array();
