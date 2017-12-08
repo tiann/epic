@@ -93,10 +93,13 @@ class Offset {
         long address = base + offset.offset;
         byte[] bytes;
         if (offset.length == BitWidth.DWORD) {
-            if (value > Integer.MAX_VALUE) {
-                throw new IllegalStateException("overflow may occured");
+            int intValue = (int) value;
+            long highest4Bytes = value >>> 32;
+            if (intValue < 0 && highest4Bytes == 0xFFFFFFFFL ||
+                    intValue >= 0 && highest4Bytes == 0x0L) {
+                bytes = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(intValue).array();
             } else {
-                bytes = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt((int) value).array();
+                throw new IllegalStateException("overflow may occur");
             }
         } else {
             bytes = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(value).array();
@@ -112,59 +115,87 @@ class Offset {
         ART_ACCESS_FLAG_OFFSET.setLength(Offset.BitWidth.DWORD);
 
         final int apiLevel = Build.VERSION.SDK_INT;
+        if (apiLevel > 26) {
+            throw new RuntimeException("API LEVEL: " + apiLevel + " is not supported now : (");
+        }
+
         if (Runtime.is64Bit()) {
             ART_QUICK_CODE_OFFSET.setLength(Offset.BitWidth.QWORD);
             ART_JNI_ENTRY_OFFSET.setLength(BitWidth.QWORD);
-            if (apiLevel >= 26) {
-                throw new RuntimeException("Unsupported now.");
-            } else if (apiLevel >= 24) {
-                ART_QUICK_CODE_OFFSET.setOffset(48);
-                ART_JNI_ENTRY_OFFSET.setOffset(40);
-                ART_ACCESS_FLAG_OFFSET.setOffset(4);
-            } else if (apiLevel >= 23) {
-                ART_QUICK_CODE_OFFSET.setOffset(48);
-                ART_JNI_ENTRY_OFFSET.setOffset(40);
-                ART_ACCESS_FLAG_OFFSET.setOffset(12);
-            } else if (apiLevel >= 22) {
-                ART_QUICK_CODE_OFFSET.setOffset(52);
-                ART_JNI_ENTRY_OFFSET.setOffset(44);
-                ART_ACCESS_FLAG_OFFSET.setOffset(20);
-            } else if (apiLevel >= 21) {
-                ART_QUICK_CODE_OFFSET.setOffset(40);
-                ART_QUICK_CODE_OFFSET.setLength(BitWidth.QWORD);
-                ART_JNI_ENTRY_OFFSET.setOffset(32);
-                ART_JNI_ENTRY_OFFSET.setLength(BitWidth.QWORD);
-                ART_ACCESS_FLAG_OFFSET.setOffset(56);
-            } else {
-                ART_QUICK_CODE_OFFSET.setOffset(32);
-                ART_ACCESS_FLAG_OFFSET.setOffset(28);
+            switch (apiLevel) {
+                case Build.VERSION_CODES.O:
+                    ART_QUICK_CODE_OFFSET.setOffset(40);
+                    ART_JNI_ENTRY_OFFSET.setOffset(32);
+                    ART_ACCESS_FLAG_OFFSET.setOffset(4);
+                    break;
+                case Build.VERSION_CODES.N_MR1:
+                case Build.VERSION_CODES.N:
+                    ART_QUICK_CODE_OFFSET.setOffset(48);
+                    ART_JNI_ENTRY_OFFSET.setOffset(40);
+                    ART_ACCESS_FLAG_OFFSET.setOffset(4);
+                    break;
+                case Build.VERSION_CODES.M:
+                    ART_QUICK_CODE_OFFSET.setOffset(48);
+                    ART_JNI_ENTRY_OFFSET.setOffset(40);
+                    ART_ACCESS_FLAG_OFFSET.setOffset(12);
+                    break;
+                case Build.VERSION_CODES.LOLLIPOP_MR1:
+                    ART_QUICK_CODE_OFFSET.setOffset(52);
+                    ART_JNI_ENTRY_OFFSET.setOffset(44);
+                    ART_ACCESS_FLAG_OFFSET.setOffset(20);
+                    break;
+                case Build.VERSION_CODES.LOLLIPOP:
+                    ART_QUICK_CODE_OFFSET.setOffset(40);
+                    ART_QUICK_CODE_OFFSET.setLength(BitWidth.QWORD);
+                    ART_JNI_ENTRY_OFFSET.setOffset(32);
+                    ART_JNI_ENTRY_OFFSET.setLength(BitWidth.QWORD);
+                    ART_ACCESS_FLAG_OFFSET.setOffset(56);
+                    break;
+                case Build.VERSION_CODES.KITKAT:
+                    ART_QUICK_CODE_OFFSET.setOffset(32);
+                    ART_ACCESS_FLAG_OFFSET.setOffset(28);
+                    break;
+                default:
+                    throw new RuntimeException("API LEVEL: " + apiLevel + " is not supported now : (");
             }
         } else {
             ART_QUICK_CODE_OFFSET.setLength(Offset.BitWidth.DWORD);
             ART_JNI_ENTRY_OFFSET.setLength(BitWidth.DWORD);
-            if (apiLevel >= 26) {
-                throw new RuntimeException("Unsupported now.");
-            } else if (apiLevel >= 24) {
-                ART_QUICK_CODE_OFFSET.setOffset(32);
-                ART_JNI_ENTRY_OFFSET.setOffset(28);
-                ART_ACCESS_FLAG_OFFSET.setOffset(4);
-            } else if (apiLevel >= 23) {
-                ART_QUICK_CODE_OFFSET.setOffset(36);
-                ART_JNI_ENTRY_OFFSET.setOffset(32);
-                ART_ACCESS_FLAG_OFFSET.setOffset(12);
-            } else if (apiLevel >= 22) {
-                ART_QUICK_CODE_OFFSET.setOffset(44);
-                ART_JNI_ENTRY_OFFSET.setOffset(40);
-                ART_ACCESS_FLAG_OFFSET.setOffset(20);
-            } else if (apiLevel >= 21) {
-                ART_QUICK_CODE_OFFSET.setOffset(40);
-                ART_QUICK_CODE_OFFSET.setLength(BitWidth.QWORD);
-                ART_JNI_ENTRY_OFFSET.setOffset(32);
-                ART_JNI_ENTRY_OFFSET.setLength(BitWidth.QWORD);
-                ART_ACCESS_FLAG_OFFSET.setOffset(56);
-            } else {
-                ART_QUICK_CODE_OFFSET.setOffset(32);
-                ART_ACCESS_FLAG_OFFSET.setOffset(28);
+            switch (apiLevel) {
+                case Build.VERSION_CODES.O:
+                    ART_QUICK_CODE_OFFSET.setOffset(28);
+                    ART_JNI_ENTRY_OFFSET.setOffset(24);
+                    ART_ACCESS_FLAG_OFFSET.setOffset(4);
+                    break;
+                case Build.VERSION_CODES.N_MR1:
+                case Build.VERSION_CODES.N:
+                    ART_QUICK_CODE_OFFSET.setOffset(32);
+                    ART_JNI_ENTRY_OFFSET.setOffset(28);
+                    ART_ACCESS_FLAG_OFFSET.setOffset(4);
+                    break;
+                case Build.VERSION_CODES.M:
+                    ART_QUICK_CODE_OFFSET.setOffset(36);
+                    ART_JNI_ENTRY_OFFSET.setOffset(32);
+                    ART_ACCESS_FLAG_OFFSET.setOffset(12);
+                    break;
+                case Build.VERSION_CODES.LOLLIPOP_MR1:
+                    ART_QUICK_CODE_OFFSET.setOffset(44);
+                    ART_JNI_ENTRY_OFFSET.setOffset(40);
+                    ART_ACCESS_FLAG_OFFSET.setOffset(20);
+                    break;
+                case Build.VERSION_CODES.LOLLIPOP:
+                    ART_QUICK_CODE_OFFSET.setOffset(40);
+                    ART_QUICK_CODE_OFFSET.setLength(BitWidth.QWORD);
+                    ART_JNI_ENTRY_OFFSET.setOffset(32);
+                    ART_JNI_ENTRY_OFFSET.setLength(BitWidth.QWORD);
+                    ART_ACCESS_FLAG_OFFSET.setOffset(56);
+                    break;
+                case Build.VERSION_CODES.KITKAT:
+                    ART_QUICK_CODE_OFFSET.setOffset(32);
+                    ART_ACCESS_FLAG_OFFSET.setOffset(28);
+                    break;
+                default:
+                    throw new RuntimeException("API LEVEL: " + apiLevel + " is not supported now : (");
             }
         }
     }

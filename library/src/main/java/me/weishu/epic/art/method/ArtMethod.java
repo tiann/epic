@@ -100,7 +100,9 @@ public class ArtMethod {
 
     public ArtMethod backup() {
         try {
-            Class<?> abstractMethodClass = Class.forName("java.lang.reflect.AbstractMethod");
+            // Before Oreo, it is: java.lang.reflect.AbstractMethod
+            // After Oreo, it is: java.lang.reflect.Executable
+            Class<?> abstractMethodClass = Method.class.getSuperclass();
 
             Object executable = this.getExecutable();
             ArtMethod artMethod;

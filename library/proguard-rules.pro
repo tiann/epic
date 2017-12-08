@@ -23,3 +23,19 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-keepattributes Signature,SourceFile,LineNumberTable,Exceptions
+
+-keep class com.taobao.android.dexposed.** {*;}
+-keep class me.weishu.epic.art.** {*;}
+
+# delete log in release mode.
+-assumenosideeffects class com.taobao.android.dexposed.utility.Logger {
+          public static void i(...);
+          public static void w(...);
+          public static void d(...);
+          public static void e(...);
+}
+
+-assumenosideeffects class com.taobao.android.dexposed.utility.Debug {
+          public static *** hexdump(...);
+}
