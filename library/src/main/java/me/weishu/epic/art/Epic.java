@@ -27,7 +27,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -212,12 +211,7 @@ public final class Epic {
 
         @Override
         public String toString() {
-            return "MethodInfo{" +
-                    "isStatic=" + isStatic +
-                    ", paramNumber=" + paramNumber +
-                    ", paramTypes=" + Arrays.toString(paramTypes) +
-                    ", returnType=" + returnType +
-                    '}';
+            return method.toGenericString();
         }
     }
 }

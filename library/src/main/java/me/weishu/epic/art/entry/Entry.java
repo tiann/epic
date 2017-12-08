@@ -387,7 +387,7 @@ public class Entry {
         } else {
             int address = byteBuffer.getInt();
             Object object = EpicNative.getObject(self, address);
-            // Logger.i(TAG, "wrapArgument, address: 0x" + Long.toHexString(address) + ", value:" + object);
+            Logger.i(TAG, "wrapArgument, address: 0x" + Long.toHexString(address) + ", value:" + object);
             return object;
         }
     }
