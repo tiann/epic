@@ -70,7 +70,7 @@ void init_entries(JNIEnv *env) {
         void *handle = dlopen("libart.so", RTLD_LAZY | RTLD_GLOBAL);
         addWeakGloablReference = (jobject (*)(JavaVM *, void *, void *)) dlsym(handle,
                                                                                "_ZN3art9JavaVMExt16AddWeakGlobalRefEPNS_6ThreadEPNS_6mirror6ObjectE");
-    } else if (api_level <= 26){
+    } else {
         // Android N and O, Google disallow us use dlsym;
         void *handle;
         void *jit_lib;
@@ -83,7 +83,7 @@ void init_entries(JNIEnv *env) {
             jit_lib = fake_dlopen("/system/lib/libart-compiler.so", RTLD_NOW);
         }
         LOGV("fake dlopen install: %p", handle);
-        const char *addWeakGloablReferenceSymbol = api_level == 25
+        const char *addWeakGloablReferenceSymbol = api_level <= 25
                                                    ? "_ZN3art9JavaVMExt16AddWeakGlobalRefEPNS_6ThreadEPNS_6mirror6ObjectE"
                                                    : "_ZN3art9JavaVMExt16AddWeakGlobalRefEPNS_6ThreadENS_6ObjPtrINS_6mirror6ObjectEEE";
         addWeakGloablReference = (jobject (*)(JavaVM *, void *, void *)) fake_dlsym(handle, addWeakGloablReferenceSymbol);
