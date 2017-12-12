@@ -482,7 +482,7 @@ public class Entry64ForM {
         } else {
             long address = byteBuffer.getLong();
             Object object = EpicNative.getObject(self, address);
-            Logger.d(TAG, "wrapArgument, address: 0x" + Long.toHexString(address) + ", value:" + object);
+            // Logger.d(TAG, "wrapArgument, address: 0x" + Long.toHexString(address) + ", value:" + object);
             return object;
         }
     }

@@ -72,6 +72,7 @@ public final class Epic {
                 ShellCode = new Thumb2();
             } else {
                 // todo ARM32
+                Logger.w(TAG, "ARM32, not support now.");
             }
         }
         if (ShellCode == null) {
