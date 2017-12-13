@@ -1,22 +1,11 @@
 package me.weishu.epic.samples.tests;
 
+import android.os.Build;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import me.weishu.epic.samples.tests.custom.Case1;
-import me.weishu.epic.samples.tests.custom.Case10_Default_Constructor;
-import me.weishu.epic.samples.tests.custom.Case11_SuspendAll;
-import me.weishu.epic.samples.tests.custom.Case12_MultiCallback;
-import me.weishu.epic.samples.tests.custom.Case2;
-import me.weishu.epic.samples.tests.custom.Case3;
-import me.weishu.epic.samples.tests.custom.Case4;
-import me.weishu.epic.samples.tests.custom.Case5;
-import me.weishu.epic.samples.tests.custom.Case6;
-import me.weishu.epic.samples.tests.custom.Case7;
-import me.weishu.epic.samples.tests.custom.Case8_Activity_onCreate;
-import me.weishu.epic.samples.tests.custom.Case9_ThreadMonitor;
-import me.weishu.epic.samples.tests.custom.CaseManager;
 import me.weishu.epic.samples.tests.arguments.ArgStatic0;
 import me.weishu.epic.samples.tests.arguments.ArgStatic4;
 import me.weishu.epic.samples.tests.arguments.ArgStatic44;
@@ -45,6 +34,20 @@ import me.weishu.epic.samples.tests.arguments.ArgStatic8848;
 import me.weishu.epic.samples.tests.arguments.ArgStatic888;
 import me.weishu.epic.samples.tests.arguments.ArgStatic8884;
 import me.weishu.epic.samples.tests.arguments.ArgStatic8888;
+import me.weishu.epic.samples.tests.custom.Case1;
+import me.weishu.epic.samples.tests.custom.Case10_Default_Constructor;
+import me.weishu.epic.samples.tests.custom.Case11_SuspendAll;
+import me.weishu.epic.samples.tests.custom.Case12_MultiCallback;
+import me.weishu.epic.samples.tests.custom.Case13_FastNative;
+import me.weishu.epic.samples.tests.custom.Case2;
+import me.weishu.epic.samples.tests.custom.Case3;
+import me.weishu.epic.samples.tests.custom.Case4;
+import me.weishu.epic.samples.tests.custom.Case5;
+import me.weishu.epic.samples.tests.custom.Case6;
+import me.weishu.epic.samples.tests.custom.Case7;
+import me.weishu.epic.samples.tests.custom.Case8_Activity_onCreate;
+import me.weishu.epic.samples.tests.custom.Case9_ThreadMonitor;
+import me.weishu.epic.samples.tests.custom.CaseManager;
 import me.weishu.epic.samples.tests.invoketype.InvokeConstructor;
 import me.weishu.epic.samples.tests.returntype.BooleanType;
 import me.weishu.epic.samples.tests.returntype.ByteType;
@@ -158,8 +161,15 @@ public class TestManager {
         CaseManager.getInstance().getCase(Case8_Activity_onCreate.class);
         CaseManager.getInstance().getCase(Case9_ThreadMonitor.class);
         CaseManager.getInstance().getCase(Case10_Default_Constructor.class);
-        CaseManager.getInstance().getCase(Case11_SuspendAll.class);
         CaseManager.getInstance().getCase(Case12_MultiCallback.class);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            CaseManager.getInstance().getCase(Case11_SuspendAll.class);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CaseManager.getInstance().getCase(Case13_FastNative.class);
+        }
 
         final Set<Class<?>> cases = CaseManager.getInstance().getCases();
         for (final Class<?> aCase : cases) {

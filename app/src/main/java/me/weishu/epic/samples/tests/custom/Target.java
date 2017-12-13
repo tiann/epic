@@ -1,5 +1,6 @@
 package me.weishu.epic.samples.tests.custom;
 
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.taobao.android.dexposed.XposedHelpers;
@@ -60,6 +61,11 @@ public class Target {
         Log.i("mylog", "test1, arg1: " + a + " , arg2:" + b);
 
         return a.hashCode() + b;
+    }
+
+    public long longRunMethod() {
+        SystemClock.sleep(4000);
+        return SystemClock.elapsedRealtime();
     }
 
     public static void validate() {
