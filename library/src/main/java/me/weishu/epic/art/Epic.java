@@ -64,6 +64,7 @@ public final class Epic {
                     case Build.VERSION_CODES.N:
                     case Build.VERSION_CODES.N_MR1:
                     case Build.VERSION_CODES.O:
+                    case Build.VERSION_CODES.O_MR1:
                         ShellCode = new Arm64_2();
                         break;
                 }
