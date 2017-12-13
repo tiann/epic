@@ -19,6 +19,7 @@
 
 package com.taobao.android.dexposed;
 
+import android.os.Build;
 import android.util.Log;
 
 import com.taobao.android.dexposed.XC_MethodHook.MethodHookParam;
@@ -411,9 +412,10 @@ public final class DexposedBridge {
 
 	static {
 		try {
-			if (android.os.Build.VERSION.SDK_INT > 19 && android.os.Build.VERSION.SDK_INT <= 26 ){
+			if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT
+					&& android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1){
 				System.loadLibrary("epic");
-			} else if (android.os.Build.VERSION.SDK_INT > 14){
+			} else if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH){
 				System.loadLibrary("dexposed");
 			} else {
 
