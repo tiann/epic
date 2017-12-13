@@ -33,8 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import me.weishu.epic.art.arch.Arm64;
-import me.weishu.epic.art.arch.Arm64ForM;
+import me.weishu.epic.art.arch.Arm64_2;
 import me.weishu.epic.art.arch.ShellCode;
 import me.weishu.epic.art.arch.Thumb2;
 import me.weishu.epic.art.method.ArtMethod;
@@ -60,12 +59,12 @@ public final class Epic {
             if (Runtime.is64Bit()) {
                 switch (apiLevel) {
                     case Build.VERSION_CODES.M:
-                        ShellCode = new Arm64ForM();
+                        ShellCode = new Arm64_2();
                         break;
                     case Build.VERSION_CODES.N:
                     case Build.VERSION_CODES.N_MR1:
                     case Build.VERSION_CODES.O:
-                        ShellCode = new Arm64();
+                        ShellCode = new Arm64_2();
                         break;
                 }
             } else if (Runtime.isThumb2()) {

@@ -18,7 +18,7 @@ package me.weishu.epic.art.arch;
 
 import java.nio.ByteOrder;
 
-public class Arm64ForM extends ShellCode {
+public class Arm64_2 extends ShellCode {
 
     @Override
     public int sizeOfDirectJump() {

@@ -27,8 +27,7 @@ import java.lang.reflect.Method;
 
 import me.weishu.epic.art.arch.ShellCode;
 import me.weishu.epic.art.entry.Entry;
-import me.weishu.epic.art.entry.Entry64;
-import me.weishu.epic.art.entry.Entry64ForM;
+import me.weishu.epic.art.entry.Entry64_2;
 import me.weishu.epic.art.method.ArtMethod;
 
 class Trampoline {
@@ -164,7 +163,9 @@ class Trampoline {
         final Epic.MethodInfo methodInfo = Epic.getMethodInfo(source.getAddress());
         final Class<?> returnType = methodInfo.returnType;
 
-        Method bridgeMethod = Runtime.is64Bit() ? (Build.VERSION.SDK_INT == 23 ? Entry64ForM.getBridgeMethod(methodInfo) : Entry64.getBridgeMethod(returnType))
+//        Method bridgeMethod = Runtime.is64Bit() ? (Build.VERSION.SDK_INT == 23 ? Entry64_2.getBridgeMethod(methodInfo) : Entry64.getBridgeMethod(returnType))
+//                : Entry.getBridgeMethod(returnType);
+        Method bridgeMethod = Runtime.is64Bit() ? Entry64_2.getBridgeMethod(methodInfo)
                 : Entry.getBridgeMethod(returnType);
 
         final ArtMethod target = ArtMethod.of(bridgeMethod);
