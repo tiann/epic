@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 #include <list>
-#include "../../../../../../../Library/Android/sdk/ndk-bundle/platforms/android-14/arch-arm/usr/include/jni.h"
+#include <jni.h>
 
 // Android 6.0: http://androidxref.com/6.0.0_r5/xref/art/runtime/runtime.h
 // Android 7.0: http://androidxref.com/7.0.0_r1/xref/art/runtime/runtime.h
