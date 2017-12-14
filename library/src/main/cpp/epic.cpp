@@ -23,7 +23,9 @@
 #include <dlfcn.h>
 #include <cstdlib>
 #include <sys/system_properties.h>
+#include <fcntl.h>
 #include "fake_dlfcn.h"
+#include "art.h"
 
 #define LOGV(...)  ((void)__android_log_print(ANDROID_LOG_INFO, "epic.Native", __VA_ARGS__))
 
@@ -40,6 +42,12 @@ class ScopedSuspendAll {};
 
 void (*suspendAll)(ScopedSuspendAll*, char*) = nullptr;
 void (*resumeAll)(ScopedSuspendAll*) = nullptr;
+
+class ScopedJitSuspend {};
+void (*startJit)(ScopedJitSuspend*) = nullptr;
+void (*stopJit)(ScopedJitSuspend*) = nullptr;
+
+void (*DisableMovingGc)(void*) = nullptr;
 
 void* __self() {
 
@@ -97,6 +105,11 @@ void init_entries(JNIEnv *env) {
         suspendAll = reinterpret_cast<void (*)(ScopedSuspendAll*, char*)>(fake_dlsym(handle, "_ZN3art16ScopedSuspendAllC1EPKcb"));
         resumeAll = reinterpret_cast<void (*)(ScopedSuspendAll*)>(fake_dlsym(handle, "_ZN3art16ScopedSuspendAllD1Ev"));
 
+        // Disable this now.
+        // startJit = reinterpret_cast<void(*)(ScopedJitSuspend*)>(fake_dlsym(handle, "_ZN3art3jit16ScopedJitSuspendD1Ev"));
+        // stopJit = reinterpret_cast<void(*)(ScopedJitSuspend*)>(fake_dlsym(handle, "_ZN3art3jit16ScopedJitSuspendC1Ev"));
+
+        // DisableMovingGc = reinterpret_cast<void(*)(void*)>(fake_dlsym(handle, "_ZN3art2gc4Heap15DisableMovingGcEv"));
     }
 
     LOGV("addWeakGloablReference: %p", addWeakGloablReference);
@@ -118,6 +131,22 @@ jlong epic_suspendAll(JNIEnv *, jclass) {
 void epic_resumeAll(JNIEnv* env, jclass, jlong obj) {
     ScopedSuspendAll* scopedSuspendAll = reinterpret_cast<ScopedSuspendAll*>(obj);
     resumeAll(scopedSuspendAll);
+}
+
+jlong epic_stopJit(JNIEnv*, jclass) {
+    ScopedJitSuspend *scopedJitSuspend = (ScopedJitSuspend *) malloc(sizeof(ScopedJitSuspend));
+    stopJit(scopedJitSuspend);
+    return reinterpret_cast<jlong >(scopedJitSuspend);
+}
+
+void epic_startJit(JNIEnv*, jclass, jlong obj) {
+    ScopedJitSuspend *scopedJitSuspend = reinterpret_cast<ScopedJitSuspend *>(obj);
+    startJit(scopedJitSuspend);
+}
+
+void epic_disableMovingGc(JNIEnv* env, jclass ,jint api) {
+    void *heap = getHeap(env, api);
+    DisableMovingGc(heap);
 }
 
 jboolean epic_munprotect(JNIEnv *env, jclass, jlong addr, jlong len) {
@@ -239,7 +268,10 @@ static JNINativeMethod dexposedMethods[] = {
         {"getObject",         "(JJ)Ljava/lang/Object;",        (void *) epic_getobject},
         {"compileMethod",     "(Ljava/lang/reflect/Member;J)Z",(void *) epic_compile},
         {"suspendAll",        "()J",                           (void *) epic_suspendAll},
-        {"resumeAll",         "(J)V",                           (void *) epic_resumeAll}
+        {"resumeAll",         "(J)V",                          (void *) epic_resumeAll},
+        {"stopJit",           "()J",                           (void *) epic_stopJit},
+        {"startJit",          "(J)V",                          (void *) epic_startJit},
+        {"disableMovingGc",   "(I)V",                          (void *) epic_disableMovingGc},
 };
 
 static int registerNativeMethods(JNIEnv *env, const char *className,

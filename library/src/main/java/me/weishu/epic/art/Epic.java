@@ -45,7 +45,7 @@ public final class Epic {
 
     private static final String TAG = "Epic";
 
-    private static final Map<String, List<ArtMethod>> backupMethodsMapping = new ConcurrentHashMap<String, List<ArtMethod>>();
+    private static final Map<String, ArtMethod> backupMethodsMapping = new ConcurrentHashMap<>();
 
     private static final Map<Long, MethodInfo> originSigs = new HashMap<>();
 
@@ -128,12 +128,10 @@ public final class Epic {
         Logger.i(TAG, "backup method address:" + Debug.addrHex(backupMethod.getAddress()));
         Logger.i(TAG, "backup method entry :" + Debug.addrHex(backupMethod.getEntryPointFromQuickCompiledCode()));
 
-        List<ArtMethod> backupList = backupMethodsMapping.get(identifier);
+        ArtMethod backupList = getBackMethod(artOrigin);
         if (backupList == null) {
-            backupList = new LinkedList<ArtMethod>();
-            backupMethodsMapping.put(identifier, backupList);
+            setBackMethod(artOrigin, backupMethod);
         }
-        backupList.add(backupMethod);
 
         if (!scripts.containsKey(identifier)) {
             scripts.put(identifier, new Trampoline(ShellCode, artOrigin));
@@ -178,14 +176,14 @@ public final class Epic {
 
     }*/
 
-    public static ArtMethod getBackMethod(ArtMethod origin) {
+    public synchronized static ArtMethod getBackMethod(ArtMethod origin) {
         String identifier = origin.getIdentifier();
-        List<ArtMethod> backupList = backupMethodsMapping.get(identifier);
-        if (backupList == null) {
-            return null;
-        }
+        return backupMethodsMapping.get(identifier);
+    }
 
-        return backupList.get(backupList.size() - 1);
+    public static synchronized void setBackMethod(ArtMethod origin, ArtMethod backup) {
+        String identifier = origin.getIdentifier();
+        backupMethodsMapping.put(identifier, backup);
     }
 
     public static MethodInfo getMethodInfo(long address) {

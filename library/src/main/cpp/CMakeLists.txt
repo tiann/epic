@@ -10,7 +10,7 @@ cmake_minimum_required(VERSION 3.4.1)
 # You can define multiple libraries, and CMake builds them for you.
 # Gradle automatically packages shared libraries with your APK.
 
-set (SRC_LIST epic.cpp fake_dlfcn.cpp)
+set (SRC_LIST epic.cpp fake_dlfcn.cpp art.cpp)
 add_library( # Sets the name of the library.
              epic
 

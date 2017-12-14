@@ -39,6 +39,7 @@ import me.weishu.epic.samples.tests.custom.Case10_Default_Constructor;
 import me.weishu.epic.samples.tests.custom.Case11_SuspendAll;
 import me.weishu.epic.samples.tests.custom.Case12_MultiCallback;
 import me.weishu.epic.samples.tests.custom.Case13_FastNative;
+import me.weishu.epic.samples.tests.custom.Case14_GC;
 import me.weishu.epic.samples.tests.custom.Case2;
 import me.weishu.epic.samples.tests.custom.Case3;
 import me.weishu.epic.samples.tests.custom.Case4;
@@ -165,6 +166,8 @@ public class TestManager {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             CaseManager.getInstance().getCase(Case11_SuspendAll.class);
+            CaseManager.getInstance().getCase(Case14_GC.class);
+            // CaseManager.getInstance().getCase(Case15_StopJit.class);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

@@ -22,6 +22,7 @@ import android.util.Log;
 import com.taobao.android.dexposed.XposedHelpers;
 import com.taobao.android.dexposed.utility.Logger;
 import com.taobao.android.dexposed.utility.NeverCalled;
+import com.taobao.android.dexposed.utility.Unsafe;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
@@ -31,6 +32,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
 
+import me.weishu.epic.art.Epic;
 import me.weishu.epic.art.EpicNative;
 
 /**
@@ -41,11 +43,16 @@ public class ArtMethod {
     private static final String TAG = "ArtMethod";
 
     /**
-     * The address of the Java method. this is not the real memory address of the java.lang.reflect.Method
+     * The address of the Art method. this is not the real memory address of the java.lang.reflect.Method
      * But the address used by VM which stand for the Java method.
-     * generally, it was the address of art::mirror::ArtMethod.
+     * generally, it was the address of art::mirror::ArtMethod. @{link #objectAddress}
      */
     private long address;
+
+    /**
+     * The address of the java method(Java Object's address), which may be move from gc.
+     */
+    private long objectAddress;
 
     /**
      * the origin object if this is a constructor
@@ -56,6 +63,11 @@ public class ArtMethod {
      * the origin object if this is a method;
      */
     private Method method;
+
+    /**
+     * the origin ArtMethod if this method is a backup of someone, null when this is not backup
+     */
+    private ArtMethod origin;
 
     /**
      * The size of ArtMethod, usually the java part of ArtMethod may not stand for the whole one
@@ -82,8 +94,10 @@ public class ArtMethod {
     private void init() {
         if (constructor != null) {
             address = EpicNative.getMethodAddress(constructor);
+            objectAddress = Unsafe.getObjectAddress(constructor);
         } else {
             address = EpicNative.getMethodAddress(method);
+            objectAddress = Unsafe.getObjectAddress(method);
         }
     }
 
@@ -157,6 +171,7 @@ public class ArtMethod {
             }
             artMethod.makePrivate();
             artMethod.setAccessible(true);
+            artMethod.origin = this; // save origin method.
             return artMethod;
 
 
@@ -190,6 +205,14 @@ public class ArtMethod {
         }
     }
 
+    public Class<?> getDeclaringClass() {
+        if (constructor != null) {
+            return constructor.getDeclaringClass();
+        } else {
+            return method.getDeclaringClass();
+        }
+    }
+
     /**
      * Force compile the method to avoid interpreter mode.
      * This is only used above Android N
@@ -213,6 +236,26 @@ public class ArtMethod {
      * @throws InstantiationException throw when the constructor can not create instance.
      */
     public Object invoke(Object receiver, Object... args) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (origin != null) {
+                long currentAddress = Unsafe.getObjectAddress(getExecutable());
+                if (currentAddress != objectAddress) {
+                    final ArtMethod backup = origin.backup();
+                    Logger.i(TAG, "the address of java method was moved by gc, backup it now! origin address: 0x"
+                            + Long.toHexString(objectAddress) + " , currentAddress: 0x" + Long.toHexString(currentAddress));
+                    Epic.setBackMethod(origin, backup);
+                    return backup.invokeInternal(receiver, args);
+                } else {
+                    Logger.i(TAG, "the address is same with last invoke, not moved by gc");
+                }
+            }
+        }
+
+        return invokeInternal(receiver, args);
+    }
+
+    private Object invokeInternal(Object receiver, Object... args) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         if (constructor != null) {
             return constructor.newInstance(args);
         } else {

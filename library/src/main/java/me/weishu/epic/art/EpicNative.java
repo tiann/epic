@@ -66,6 +66,27 @@ public final class EpicNative {
      */
     public static native void resumeAll(long cookie);
 
+    /**
+     * stop jit compiler in runtime.
+     * Warning: Just for experiment Do not call this now!!!
+     * @return cookie use by {@link #startJit(long)}
+     */
+    public static native long stopJit();
+
+    /**
+     * start jit compiler stop by {@link #stopJit()}
+     * Warning: Just for experiment Do not call this now!!!
+     * @param cookie the cookie return by {@link #stopJit()}
+     */
+    public static native void startJit(long cookie);
+
+    /**
+     * Disable the moving gc of runtime.
+     * Warning: Just for experiment Do not call this now!!!
+     * @param api the api level
+     */
+    public static native void disableMovingGc(int api);
+
     private static final String TAG = "EpicNative";
 
     private EpicNative() {
