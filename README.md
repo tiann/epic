@@ -6,7 +6,7 @@
 What is it?
 -----------
 
-Epic is the continution of [Dexposed](https://github.com/alibaba/dexposed) on ART.
+Epic is the continution of [Dexposed](https://github.com/alibaba/dexposed) on ART(Supporting 4.0~8.1).
 
 > Dexposed is a powerful yet non-invasive runtime [AOP (Aspect-oriented Programming)](http://en.wikipedia.org/wiki/Aspect-oriented_programming) framework
 for Android app development, based on the work of open-source [Xposed](https://github.com/rovo89/Xposed) [framework](https://github.com/rovo89/XposedBridge) project.
@@ -100,7 +100,7 @@ Checkout the `sample` project to find out more.
 
 Support
 ----------
-Epic support all dalvik runtime arm architecture devices from Android 2.3 to 4.4 (no include 3.0), which inherits from Dexposed. Further more, it support ART thumb2 and arm64 architecture from Android 5.0 to 7.1.2. arm32, x86, x86_64 and mips are not supported now. The stability is not proved in any online product, it is only personal use now(mainly for performance analysis), Welcome to any compatibility issues or PRs.
+Epic support all dalvik runtime arm architecture devices from Android 2.3 to 4.4 (no include 3.0), which inherits from Dexposed. Further more, it support ART thumb2 and arm64 architecture from Android 5.0 to 8.1. arm32, x86, x86_64 and mips are not supported now. The stability is not proved in any online product, it is only personal use now(mainly for performance analysis), Welcome to any compatibility issues or PRs.
 
 Follow is support status.
 
@@ -110,11 +110,13 @@ Dalvik  | 2.2             | Not Test
 Dalvik  | 2.3             | Yes
 Dalvik  | 3.0             | No
 Dalvik  | 4.0-4.4         | Yes
-ART     | 5.0             | Yes
-ART     | 5.1             | Yes
-ART     | 6.0             | Yes
-ART     | N (7.0/7.1)     | Yes
-ART     | O (8.0)         | Not Test
+ART     | L (5.0)         | Yes
+ART     | L MR1 (5.1)     | Yes
+ART     | M (6.0)         | Yes
+ART     | N (7.0)         | Yes
+ART     | N MR1 (7.1)     | Yes
+ART     | O (8.0)         | Yes
+ART     | O MR1(8.1)      | Yes
 
 And the architecture support status:
 
@@ -133,7 +135,7 @@ Known Issues
 1. Short method (instruction less 8 bytes on thumb2 or less 16bytes in ARM64) are not supported.
 2. Fully inlined methods are not supported.
 3. Method parameters which contains float/double are not fully test on platform which support hardware float point(armeabi-v7a, arm64-v8a)
-4. Android O is not supported now.
+4. arm64 in Android L is not supported.
 
 Contribute
 ----------

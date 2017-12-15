@@ -75,7 +75,7 @@ DexposedBridge.findAndHookMethod(DexFile.class, "loadDex", String.class, String.
 
 ## 支持情况
 
-目前Epic支持 Android 5.0~ 7.1 的 Thumb2/ARM64指令集；Android O的支持正在计划中，x86/mips/arm32的支持后续也会完成。但是，本项目没有经过任何线上产品的验证，无法保证足够的稳定性；目前仅仅是个人用途（主要是性能分析），欢迎给我提 issue :)
+目前Epic支持 Android 5.0~ 8.1 的 Thumb2/ARM64指令集；Android O的支持正在计划中，x86/mips/arm32的支持后续也会完成。但是，本项目没有经过任何线上产品的验证，无法保证足够的稳定性；目前仅仅是个人用途（主要是性能分析），欢迎给我提 issue :)
 
 Android版本支持情况：
 
@@ -85,11 +85,13 @@ Dalvik  | 2.2             | Not Test
 Dalvik  | 2.3             | Yes
 Dalvik  | 3.0             | No
 Dalvik  | 4.0-4.4         | Yes
-ART     | 5.0             | Yes
-ART     | 5.1             | Yes
-ART     | 6.0             | Yes
-ART     | N (7.0/7.1)     | Yes
-ART     | O (8.0)         | Not Test
+ART     | L (5.0)         | Yes
+ART     | L MR1 (5.1)     | Yes
+ART     | M (6.0)         | Yes
+ART     | N (7.0)         | Yes
+ART     | N MR1 (7.1)     | Yes
+ART     | O (8.0)         | Yes
+ART     | O MR1(8.1)      | Yes
 
 指令集支持情况：
 
@@ -107,11 +109,11 @@ ART      | mips         | No
 1. 受限于inline hook本身，短方法 (Thum2下指令小于8个字节，ARM64小于16字节) 无法支持。
 2. 被完全内联的方法不支持。
 3. 在支持硬浮点的CPU架构(如armeabi-v7a, arm64-v8a)上，参数包含 double/float 的方法支持可能有问题，还没有进行充分地测试。
-4. Android O 尚不支持（计划中）。
+4. Android L 的 arm64 暂不支持。
 
 ## 支持和加入Epic
 
-目前Epic仅仅在 Android 5.0, 5.1, 6.0, 7.0, 7.1 的个别机型上进行过测试，没有经过大范围的测试，因此很多机型没有覆盖到；欢迎帮助进行兼容性测试，有能力的欢迎贡献代码 :)
+目前Epic仅仅在 Android 5.0, 5.1, 6.0, 7.0, 7.1, 8.0, 8.1 的个别机型上进行过测试，没有经过大范围的测试，因此很多机型没有覆盖到；欢迎帮助进行兼容性测试，有能力的欢迎贡献代码 :)
 
 你可以拿出你手头的手机，然后clone本项目到本地，然后build其中的 app 模块，安装这个测试APP到你的手机上，点击一下其中的按钮，如果提示有 「测试不通过」，或者有直接闪退的情况，请把Issue砸向我，不胜感激 ^_^ 
 
