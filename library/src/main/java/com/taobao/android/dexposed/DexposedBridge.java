@@ -501,6 +501,19 @@ public final class DexposedBridge {
 			throw new IllegalArgumentException("method must be of type Method or Constructor");
 		}
 
+		if (Runtime.isArt()) {
+			ArtMethod artMethod;
+			if (method instanceof Method) {
+				artMethod = ArtMethod.of((Method) method);
+			} else {
+				artMethod = ArtMethod.of((Constructor)method);
+			}
+			try {
+                return Epic.getBackMethod(artMethod).invoke(thisObject, args);
+			} catch (InstantiationException e) {
+                DexposedBridge.<RuntimeException>throwNoCheck(e, null);
+			}
+		}
 		return invokeOriginalMethodNative(method, 0, parameterTypes, returnType, thisObject, args);
 	}
 
