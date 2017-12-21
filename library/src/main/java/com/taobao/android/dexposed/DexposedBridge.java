@@ -50,6 +50,22 @@ import static com.taobao.android.dexposed.XposedHelpers.getIntField;
 
 public final class DexposedBridge {
 
+	static {
+		try {
+			if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT
+					&& android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1){
+				System.loadLibrary("epic");
+			} else if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH){
+				System.loadLibrary("dexposed");
+			} else {
+				throw new RuntimeException("unsupported api level: " + Build.VERSION.SDK_INT);
+			}
+
+		} catch (Throwable e) {
+			log(e);
+		}
+	}
+
 	private static final String TAG = "DexposedBridge";
 
 	private static final Object[] EMPTY_ARRAY = new Object[0];
@@ -383,48 +399,7 @@ public final class DexposedBridge {
 			return param.getResult();
 	}
 	
-//	/**
-//	 * Check device if can run dexposed, and load libs auto.
-//	 */
-//	public synchronized static boolean canDexposed(Context context) {
-//		if (!DeviceCheck.isDeviceSupport(context)) {
-//			return false;
-//		}
-//		//load dexposed lib for hook.
-//		return loadDexposedLib(context);
-//	}
-//
-//	private static boolean loadDexposedLib(Context context) {
-//		// load dexposed lib for hook.
-//		try {
-//			if (android.os.Build.VERSION.SDK_INT > 19 && android.os.Build.VERSION.SDK_INT <= 23 ){
-//				System.loadLibrary("dexposed_art");
-//			} else if (android.os.Build.VERSION.SDK_INT > 14){
-//				System.loadLibrary("dexposed");
-//			} else {
-//				return false;
-//			}
-//			return true;
-//		} catch (Throwable e) {
-//			return false;
-//		}
-//	}
 
-	static {
-		try {
-			if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT
-					&& android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1){
-				System.loadLibrary("epic");
-			} else if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH){
-				System.loadLibrary("dexposed");
-			} else {
-
-			}
-
-		} catch (Throwable e) {
-			log(e);
-		}
-	}
 	
 	private native static Object invokeSuperNative(Object obj, Object[] args, Member method, Class<?> declaringClass,
             Class<?>[] parameterTypes, Class<?> returnType, int slot)
