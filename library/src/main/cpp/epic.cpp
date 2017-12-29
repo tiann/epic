@@ -27,7 +27,11 @@
 #include "fake_dlfcn.h"
 #include "art.h"
 
+#ifdef NDEBUG
 #define LOGV(...)  ((void)__android_log_print(ANDROID_LOG_INFO, "epic.Native", __VA_ARGS__))
+#else
+#define LOGV(...)
+#endif
 
 #define JNIHOOK_CLASS "me/weishu/epic/art/EpicNative"
 
@@ -62,11 +66,12 @@ void* __self() {
 
 };
 
-void init_entries(JNIEnv *env) {
+static int api_level;
 
+void init_entries(JNIEnv *env) {
     char api_level_str[5];
     __system_property_get("ro.build.version.sdk", api_level_str);
-    int api_level = atoi(api_level_str);
+    api_level = atoi(api_level_str);
     LOGV("api level: %d", api_level);
     if (api_level < 23) {
         // Android L, art::JavaVMExt::AddWeakGlobalReference(art::Thread*, art::mirror::Object*)
@@ -254,6 +259,54 @@ jlong epic_getMethodAddress(JNIEnv *env, jclass clazz, jobject method) {
     return art_method;
 }
 
+jboolean epic_activate(JNIEnv* env, jclass jclazz, jlong jumpToAddress, jlong pc, jlong sizeOfDirectJump,
+                       jlong sizeOfBridgeJump, jbyteArray code) {
+
+    // fetch the array, we can not call this when thread suspend(may lead deadlock)
+    jbyte *srcPnt = env->GetByteArrayElements(code, 0);
+    jsize length = env->GetArrayLength(code);
+
+    jlong cookie = 0;
+    bool isNougat = api_level >= 24;
+    if (isNougat) {
+        // We do thus things:
+        // 1. modify the code mprotect
+        // 2. modify the code
+
+        // Ideal, this two operation must be atomic. Below N, this is safe, because no one
+        // modify the code except ourselves;
+        // But in Android N, When the jit is working, between our step 1 and step 2,
+        // if we modity the mprotect of the code, and planning to write the code,
+        // the jit thread may modify the mprotect of the code meanwhile
+        // we must suspend all thread to ensure the atomic operation.
+
+        LOGV("suspend all thread.");
+        cookie = epic_suspendAll(env, jclazz);
+    }
+
+    jboolean result = epic_munprotect(env, jclazz, jumpToAddress, sizeOfDirectJump);
+    if (result) {
+        unsigned char *destPnt = (unsigned char *) jumpToAddress;
+        for (int i = 0; i < length; ++i) {
+            destPnt[i] = (unsigned char) srcPnt[i];
+        }
+        jboolean ret = epic_cacheflush(env, jclazz, pc, sizeOfBridgeJump);
+        if (!ret) {
+            LOGV("cache flush failed!!");
+        }
+    } else {
+        LOGV("Writing hook failed: Unable to unprotect memory at %d", jumpToAddress);
+    }
+
+    if (cookie != 0) {
+        LOGV("resume all thread.");
+        epic_resumeAll(env, jclazz, cookie);
+    }
+
+    env->ReleaseByteArrayElements(code, srcPnt, 0);
+    return result;
+}
+
 static JNINativeMethod dexposedMethods[] = {
 
         {"mmap",              "(I)J",                          (void *) epic_mmap},
@@ -272,6 +325,7 @@ static JNINativeMethod dexposedMethods[] = {
         {"stopJit",           "()J",                           (void *) epic_stopJit},
         {"startJit",          "(J)V",                          (void *) epic_startJit},
         {"disableMovingGc",   "(I)V",                          (void *) epic_disableMovingGc},
+        {"activateNative",    "(JJJJ[B)Z",                     (void *) epic_activate}
 };
 
 static int registerNativeMethods(JNIEnv *env, const char *className,

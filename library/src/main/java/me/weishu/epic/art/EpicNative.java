@@ -80,6 +80,9 @@ public final class EpicNative {
      */
     public static native void startJit(long cookie);
 
+    // FIXME: 17/12/29 reimplement it with pure native code.
+    static native boolean activateNative(long jumpToAddress, long pc, long sizeOfTargetJump, long sizeOfBridgeJump, byte[] code);
+
     /**
      * Disable the moving gc of runtime.
      * Warning: Just for experiment Do not call this now!!!
