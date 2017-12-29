@@ -302,7 +302,7 @@ public final class DexposedBridge {
 			return null; // never reached.
 		} else {
 			final Object result = param.getResult();
-			Logger.d(TAG, "return :" + result);
+			//Logger.d(TAG, "return :" + result);
 			return result;
 		}
 	}
