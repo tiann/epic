@@ -28,13 +28,15 @@ public class Case11_SuspendAll implements Case {
                     while (true) {
                         Log.i(TAG, "I am:" + Thread.currentThread().getName() + ", count:" + (j++));
                         SystemClock.sleep(1000);
+                        if (j > 3) {
+                            break;
+                        }
                     }
                 }
             });
         }
     }
 
-    boolean flag = true;
     @Override
     public boolean validate(Object... args) {
         if (Build.VERSION.SDK_INT < 24) {
