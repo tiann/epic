@@ -99,9 +99,26 @@ public final class Unsafe {
     @SuppressWarnings("unchecked")
     public static void putLong(Object array, long offset, long value) {
         try {
-            unsafeClass.getDeclaredMethod("putLong", Object.class, long.class, long.class).invoke(unsafe, array, offset, value);
+            unsafeClass.getDeclaredMethod("putLongVolatile", Object.class, long.class, long.class).invoke(unsafe, array, offset, value);
         } catch (Exception e) {
-            Log.w(TAG, e);
+            try {
+                unsafeClass.getDeclaredMethod("putLong", Object.class, long.class, long.class).invoke(unsafe, array, offset, value);
+            } catch (Exception e1) {
+                Log.w(TAG, e);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void putInt(Object array, long offset, int value) {
+        try {
+            unsafeClass.getDeclaredMethod("putIntVolatile", Object.class, long.class, int.class).invoke(unsafe, array, offset, value);
+        } catch (Exception e) {
+            try {
+                unsafeClass.getDeclaredMethod("putIntVolatile", Object.class, long.class, int.class).invoke(unsafe, array, offset, value);
+            } catch (Exception e1) {
+                Log.w(TAG, e);
+            }
         }
     }
 
@@ -117,5 +134,21 @@ public final class Unsafe {
             Log.w(TAG, e);
             return -1;
         }
+    }
+
+    /**
+     * get Object from address, refer: http://mishadoff.com/blog/java-magic-part-4-sun-dot-misc-dot-unsafe/
+     * @param address the address of a object.
+     * @return
+     */
+    public static Object getObject(long address) {
+        Object[] array = new Object[]{null};
+        long baseOffset = arrayBaseOffset(Object[].class);
+        if (Runtime.is64Bit()) {
+            putLong(array, baseOffset, address);
+        } else {
+            putInt(array, baseOffset, (int) address);
+        }
+        return array[0];
     }
 }

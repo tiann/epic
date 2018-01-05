@@ -19,6 +19,8 @@ package me.weishu.epic.art;
 import com.taobao.android.dexposed.XposedHelpers;
 import com.taobao.android.dexposed.utility.Debug;
 import com.taobao.android.dexposed.utility.Logger;
+import com.taobao.android.dexposed.utility.Runtime;
+import com.taobao.android.dexposed.utility.Unsafe;
 
 import java.lang.reflect.Member;
 
@@ -49,7 +51,17 @@ public final class EpicNative {
 
     public static native long malloc(int sizeOfPtr);
 
-    public static native Object getObject(long self, long address);
+    public static native Object getObjectNative(long self, long address);
+
+    private static native boolean isGetObjectAvailable();
+
+    public static Object getObject(long self, long address) {
+        if (Runtime.isYunOS() || !isGetObjectAvailable()) {
+            return Unsafe.getObject(address);
+        } else {
+            return getObjectNative(self, address);
+        }
+    }
 
     public static native boolean compileMethod(Member method, long self);
 

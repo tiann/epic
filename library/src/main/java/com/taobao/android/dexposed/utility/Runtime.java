@@ -17,6 +17,8 @@
 
 package com.taobao.android.dexposed.utility;
 
+import android.annotation.SuppressLint;
+
 import java.lang.reflect.Method;
 
 import me.weishu.epic.art.method.ArtMethod;
@@ -49,5 +51,21 @@ public class Runtime {
             e.printStackTrace();
         }
         return isThumb2;
+    }
+
+    public static boolean isYunOS() {
+        String version = null;
+        String vmName = null;
+
+        try {
+            @SuppressLint("PrivateApi") Method m = Class.forName("android.os.SystemProperties").getMethod("get", String.class);
+            version = (String) m.invoke(null, "ro.yunos.version");
+            vmName = (String) m.invoke(null, "java.vm.name");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return vmName != null && vmName.toLowerCase().contains("lemur")
+                || version != null && version.trim().length() > 0;
     }
 }

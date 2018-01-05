@@ -36,7 +36,7 @@
 
 #define JNIHOOK_CLASS "me/weishu/epic/art/EpicNative"
 
-jobject (*addWeakGloablReference)(JavaVM *, void *, void *);
+jobject (*addWeakGloablReference)(JavaVM *, void *, void *) = nullptr;
 
 void* (*jit_load_)(bool*) = nullptr;
 void* jit_compiler_handle_ = nullptr;
@@ -260,6 +260,10 @@ jlong epic_getMethodAddress(JNIEnv *env, jclass clazz, jobject method) {
     return art_method;
 }
 
+jboolean epic_isGetObjectAvaliable(JNIEnv *, jclass) {
+    return (jboolean) (addWeakGloablReference != nullptr);
+}
+
 jboolean epic_activate(JNIEnv* env, jclass jclazz, jlong jumpToAddress, jlong pc, jlong sizeOfDirectJump,
                        jlong sizeOfBridgeJump, jbyteArray code) {
 
@@ -319,14 +323,15 @@ static JNINativeMethod dexposedMethods[] = {
         {"getMethodAddress",  "(Ljava/lang/reflect/Member;)J", (void *) epic_getMethodAddress},
         {"cacheflush",        "(JJ)Z",                         (void *) epic_cacheflush},
         {"malloc",            "(I)J",                          (void *) epic_malloc},
-        {"getObject",         "(JJ)Ljava/lang/Object;",        (void *) epic_getobject},
+        {"getObjectNative",   "(JJ)Ljava/lang/Object;",        (void *) epic_getobject},
         {"compileMethod",     "(Ljava/lang/reflect/Member;J)Z",(void *) epic_compile},
         {"suspendAll",        "()J",                           (void *) epic_suspendAll},
         {"resumeAll",         "(J)V",                          (void *) epic_resumeAll},
         {"stopJit",           "()J",                           (void *) epic_stopJit},
         {"startJit",          "(J)V",                          (void *) epic_startJit},
         {"disableMovingGc",   "(I)V",                          (void *) epic_disableMovingGc},
-        {"activateNative",    "(JJJJ[B)Z",                     (void *) epic_activate}
+        {"activateNative",    "(JJJJ[B)Z",                     (void *) epic_activate},
+        {"isGetObjectAvailable", "()Z",                        (void *) epic_isGetObjectAvaliable}
 };
 
 static int registerNativeMethods(JNIEnv *env, const char *className,
