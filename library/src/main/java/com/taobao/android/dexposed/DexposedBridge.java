@@ -120,31 +120,28 @@ public final class DexposedBridge {
 
 		callbacks.add(callback);
 		if (newMethod) {
-			Class<?> declaringClass = hookMethod.getDeclaringClass();
-			int slot = !Runtime.isArt() ? (int) getIntField(hookMethod, "slot") : 0;
-
-			Class<?>[] parameterTypes;
-			Class<?> returnType;
-			boolean isMethod = false;
-			if (hookMethod instanceof Method) {
-				parameterTypes = ((Method) hookMethod).getParameterTypes();
-				returnType = ((Method) hookMethod).getReturnType();
-				isMethod = true;
-			} else {
-				parameterTypes = ((Constructor<?>) hookMethod).getParameterTypes();
-				returnType = null;
-			}
-
-			AdditionalHookInfo additionalInfo = new AdditionalHookInfo(callbacks, parameterTypes, returnType);
-
-			if(!Runtime.isArt())
-				hookMethodNative(hookMethod, declaringClass, slot, additionalInfo);
-			else {
-				if (isMethod) {
+			if (Runtime.isArt()) {
+				if (hookMethod instanceof Method) {
 					Epic.hookMethod(((Method) hookMethod));
 				} else {
 					Epic.hookMethod(((Constructor) hookMethod));
 				}
+			} else {
+				Class<?> declaringClass = hookMethod.getDeclaringClass();
+				int slot = getIntField(hookMethod, "slot");
+
+				Class<?>[] parameterTypes;
+				Class<?> returnType;
+				if (hookMethod instanceof Method) {
+					parameterTypes = ((Method) hookMethod).getParameterTypes();
+					returnType = ((Method) hookMethod).getReturnType();
+				} else {
+					parameterTypes = ((Constructor<?>) hookMethod).getParameterTypes();
+					returnType = null;
+				}
+
+				AdditionalHookInfo additionalInfo = new AdditionalHookInfo(callbacks, parameterTypes, returnType);
+				hookMethodNative(hookMethod, declaringClass, slot, additionalInfo);
 			}
 		}
 		return callback.new Unhook(hookMethod);
