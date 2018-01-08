@@ -182,6 +182,17 @@ public class ArtMethod {
     }
 
     /**
+     * @return is method/constructor accessible
+     */
+    public boolean isAccessible() {
+        if (constructor != null) {
+            return constructor.isAccessible();
+        } else {
+            return method.isAccessible();
+        }
+    }
+
+    /**
      * make the constructor or method accessible
      * @param accessible accessible
      */

@@ -21,6 +21,8 @@ import com.taobao.android.dexposed.utility.Logger;
 import com.taobao.android.dexposed.utility.Runtime;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
 
 import me.weishu.epic.art.arch.ShellCode;
 import me.weishu.epic.art.entry.Entry;
@@ -37,17 +39,23 @@ class Trampoline {
     private long trampolineAddress;
     private boolean active;
 
-    private ArtMethod artOrigin;
+    // private ArtMethod artOrigin;
+    private Set<ArtMethod> segments = new HashSet<>();
 
-    Trampoline(ShellCode shellCode, ArtMethod artMethod) {
+    Trampoline(ShellCode shellCode, long entryPoint) {
         this.shellCode = shellCode;
-        this.jumpToAddress = shellCode.toMem(artMethod.getEntryPointFromQuickCompiledCode());
-        this.artOrigin = artMethod;
-        this.artOrigin.setAccessible(true);
+        this.jumpToAddress = shellCode.toMem(entryPoint);
         this.originalCode = EpicNative.get(jumpToAddress, shellCode.sizeOfDirectJump());
     }
 
-    public boolean install(){
+    public boolean install(ArtMethod originMethod){
+        boolean modified = segments.add(originMethod);
+        if (!modified) {
+            // Already hooked, ignore
+            Logger.d(TAG, originMethod + " is already hooked, return.");
+            return true;
+        }
+
         byte[] page = create();
         EpicNative.put(page, getTrampolineAddress());
 
@@ -90,7 +98,7 @@ class Trampoline {
 
     private int getSize() {
         int count = 0;
-        count += shellCode.sizeOfBridgeJump();
+        count += shellCode.sizeOfBridgeJump() * segments.size();
         count += shellCode.sizeOfCallOrigin();
         return count;
     }
@@ -98,12 +106,14 @@ class Trampoline {
     private byte[] create() {
         Logger.d(TAG, "create trampoline.");
         byte[] mainPage = new byte[getSize()];
-        int offset = 0;
 
-        byte[] script = createTrampoline(artOrigin);
-        Logger.d(TAG, "trampoline size:" + script.length);
-        System.arraycopy(script, 0, mainPage, offset, script.length);
-        offset += script.length;
+        int offset = 0;
+        for (ArtMethod method : segments) {
+            byte[] bridgeJump = createTrampoline(method);
+            int length = bridgeJump.length;
+            System.arraycopy(bridgeJump, 0, mainPage, offset, length);
+            offset += length;
+        }
 
         byte[] callOriginal = shellCode.createCallOrigin(jumpToAddress, originalCode);
         System.arraycopy(callOriginal, 0, mainPage, offset, callOriginal.length);
