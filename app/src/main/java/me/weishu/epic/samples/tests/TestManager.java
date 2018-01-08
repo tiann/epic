@@ -174,6 +174,8 @@ public class TestManager {
             CaseManager.getInstance().getCase(Case13_FastNative.class);
         }
 
+        // CaseManager.getInstance().getCase(Case16_SameEntry.class);
+
         final Set<Class<?>> cases = CaseManager.getInstance().getCases();
         for (final Class<?> aCase : cases) {
             custom.addCase(new TestCase(aCase.getSimpleName()) {

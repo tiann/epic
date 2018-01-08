@@ -104,7 +104,7 @@ class Trampoline {
     }
 
     private byte[] create() {
-        Logger.d(TAG, "create trampoline.");
+        Logger.d(TAG, "create trampoline." + segments);
         byte[] mainPage = new byte[getSize()];
 
         int offset = 0;
