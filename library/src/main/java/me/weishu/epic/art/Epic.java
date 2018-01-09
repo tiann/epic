@@ -112,7 +112,7 @@ public final class Epic {
 
         long originEntry = artOrigin.getEntryPointFromQuickCompiledCode();
         if (originEntry == ArtMethod.getQuickToInterpreterBridge()) {
-            Logger.w(TAG, "this method is not compiled, compile it now. current entry: 0x" + Long.toHexString(originEntry));
+            Logger.i(TAG, "this method is not compiled, compile it now. current entry: 0x" + Long.toHexString(originEntry));
             boolean ret = artOrigin.compile();
             if (ret) {
                 originEntry = artOrigin.getEntryPointFromQuickCompiledCode();

@@ -121,7 +121,7 @@ public class Entry {
     //endregion
 
     private static Object referenceBridge(int r1, int self, int struct) {
-        Logger.w(TAG, "enter bridge function.");
+        Logger.i(TAG, "enter bridge function.");
 
         // struct {
         //     void* sp;
@@ -161,7 +161,7 @@ public class Entry {
         Class<?> returnType = originMethodInfo.returnType;
         Object artMethod = originMethodInfo.method;
 
-        Logger.w(TAG, "leave bridge function");
+        Logger.i(TAG, "leave bridge function");
 
         if (returnType == void.class) {
             onHookVoid(artMethod, receiver, arguments);

@@ -24,9 +24,7 @@ public class Logger {
     }
 
     public static void w(String tag, String msg) {
-        if (DEBUG) {
-            Log.w(preFix + tag, msg);
-        }
+        Log.w(preFix + tag, msg);
     }
 
     public static void e(String tag, String msg) {

@@ -335,7 +335,7 @@ public class Entry64_2 {
     //endregion
 
     private static Object referenceBridge(long x1, long struct, long x3, long x4, long x5, long x6, long x7) {
-        Logger.w(TAG, "enter bridge function.");
+        Logger.i(TAG, "enter bridge function.");
 
         // struct {
         //     void* sp;
