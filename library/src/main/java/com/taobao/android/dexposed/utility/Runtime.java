@@ -25,15 +25,18 @@ import me.weishu.epic.art.method.ArtMethod;
 
 public class Runtime {
 
-    private static Boolean g64 = null;
+    private volatile static Boolean g64 = null;
+
+    private volatile static Boolean isThumb = null;
 
     public static boolean is64Bit() {
-        if (g64 == null)
+        if (g64 == null) {
             try {
                 g64 = (Boolean) Class.forName("dalvik.system.VMRuntime").getDeclaredMethod("is64Bit").invoke(Class.forName("dalvik.system.VMRuntime").getDeclaredMethod("getRuntime").invoke(null));
             } catch (Exception e) {
                 g64 = Boolean.FALSE;
             }
+        }
         return g64;
     }
 
@@ -42,15 +45,21 @@ public class Runtime {
     }
 
     public static boolean isThumb2() {
-        boolean isThumb2 = false;
-        try {
-            Method method = ArtMethod.class.getDeclaredMethod("of", Method.class);
-            ArtMethod artMethodStruct = ArtMethod.of(method);
-            isThumb2 = ((artMethodStruct.getEntryPointFromQuickCompiledCode() & 1) == 1);
-        } catch (Throwable e) {
-            e.printStackTrace();
+        if (isThumb != null) {
+            return isThumb;
         }
-        return isThumb2;
+
+        try {
+            Method method = String.class.getDeclaredMethod("hashCode");
+            ArtMethod artMethodStruct = ArtMethod.of(method);
+            long entryPointFromQuickCompiledCode = artMethodStruct.getEntryPointFromQuickCompiledCode();
+            Logger.w("Runtime", "isThumb2, entry: " + Long.toHexString(entryPointFromQuickCompiledCode));
+            isThumb = ((entryPointFromQuickCompiledCode & 1) == 1);
+            return isThumb;
+        } catch (Throwable e) {
+            Logger.w("Runtime", "isThumb2, error: " + e);
+            return true; // Default Thumb2.
+        }
     }
 
     public static boolean isYunOS() {

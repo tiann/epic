@@ -257,7 +257,7 @@ public final class DexposedBridge {
 				Object result = method.invoke(thisObject, args);
 				param.setResult(result);
 			} catch (Exception e) {
-				log(e);
+				// log(e); origin throw exception is normal.
 				param.setThrowable(e);
 			}
 		}
