@@ -18,14 +18,14 @@
 
 package com.taobao.android.dexposed;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.util.Log;
 
 public class DeviceCheck {
 	
@@ -151,7 +151,7 @@ public class DeviceCheck {
 	}
 
 	@SuppressLint("DefaultLocale")
-	private static boolean isYunOS() {
+	public static boolean isYunOS() {
 		String s1 = null;
 		String s2 = null;
 		try {

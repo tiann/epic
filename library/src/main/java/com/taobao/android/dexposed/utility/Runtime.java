@@ -17,7 +17,7 @@
 
 package com.taobao.android.dexposed.utility;
 
-import android.annotation.SuppressLint;
+import android.util.Log;
 
 import java.lang.reflect.Method;
 
@@ -25,23 +25,30 @@ import me.weishu.epic.art.method.ArtMethod;
 
 public class Runtime {
 
-    private volatile static Boolean g64 = null;
+    private static final String TAG = "Runtime";
 
     private volatile static Boolean isThumb = null;
 
-    public static boolean is64Bit() {
-        if (g64 == null) {
-            try {
-                g64 = (Boolean) Class.forName("dalvik.system.VMRuntime").getDeclaredMethod("is64Bit").invoke(Class.forName("dalvik.system.VMRuntime").getDeclaredMethod("getRuntime").invoke(null));
-            } catch (Exception e) {
-                g64 = Boolean.FALSE;
-            }
+    private volatile static boolean g64 = false;
+    private volatile static boolean isArt = true;
+
+    static {
+        try {
+            g64 = (boolean) Class.forName("dalvik.system.VMRuntime").getDeclaredMethod("is64Bit").invoke(Class.forName("dalvik.system.VMRuntime").getDeclaredMethod("getRuntime").invoke(null));
+        } catch (Exception e) {
+            Log.e(TAG, "get is64Bit failed, default not 64bit!", e);
+            g64 = false;
         }
+        isArt = System.getProperty("java.vm.version").startsWith("2");
+        Log.i(TAG, "is64Bit: " + g64 + ", isArt: " + isArt);
+    }
+
+    public static boolean is64Bit() {
         return g64;
     }
 
     public static boolean isArt() {
-        return System.getProperty("java.vm.version").startsWith("2");
+        return isArt;
     }
 
     public static boolean isThumb2() {
@@ -60,21 +67,5 @@ public class Runtime {
             Logger.w("Runtime", "isThumb2, error: " + e);
             return true; // Default Thumb2.
         }
-    }
-
-    public static boolean isYunOS() {
-        String version = null;
-        String vmName = null;
-
-        try {
-            @SuppressLint("PrivateApi") Method m = Class.forName("android.os.SystemProperties").getMethod("get", String.class);
-            version = (String) m.invoke(null, "ro.yunos.version");
-            vmName = (String) m.invoke(null, "java.vm.name");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return vmName != null && vmName.toLowerCase().contains("lemur")
-                || version != null && version.trim().length() > 0;
     }
 }
