@@ -12,7 +12,7 @@ Epic是一个在虚拟机层面、以Java Method为粒度的 **运行时** AOP H
 
 ```groovy
 dependencies {
-    compile 'me.weishu:epic:0.3.3'
+    compile 'me.weishu:epic:0.3.5'
 }
 ```
 
