@@ -67,6 +67,6 @@ public class Case16_SameEntry implements Case {
         Log.i(TAG, "1 + 2 = " + add);
         int plus = target.plus(3, 4);
         Log.i(TAG, "3 + 4 = " + plus);
-        return false;
+        return true;
     }
 }

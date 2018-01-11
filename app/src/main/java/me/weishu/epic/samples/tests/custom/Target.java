@@ -36,6 +36,10 @@ public class Target {
         return a.hashCode() + b;
     }
 
+    public int returnConst(int a) {
+        return a;
+    }
+
     public int add(int a, int b) {
         return a + b;
     }
