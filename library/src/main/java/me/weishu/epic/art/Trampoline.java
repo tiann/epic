@@ -59,6 +59,13 @@ class Trampoline {
         byte[] page = create();
         EpicNative.put(page, getTrampolineAddress());
 
+        int quickCompiledCodeSize = Epic.getQuickCompiledCodeSize(originMethod);
+        int sizeOfDirectJump = shellCode.sizeOfDirectJump();
+        if (quickCompiledCodeSize < sizeOfDirectJump) {
+            Logger.w(TAG, originMethod.toGenericString() + " quickCompiledCodeSize: " + quickCompiledCodeSize);
+            originMethod.setEntryPointFromQuickCompiledCode(getTrampolinePc());
+            return true;
+        }
         // 这里是绝对不能改EntryPoint的，碰到GC就挂(GC暂停线程的时候，遍历所有线程堆栈，如果被hook的方法在堆栈上，那就GG)
         // source.setEntryPointFromQuickCompiledCode(script.getTrampolinePc());
         return activate();

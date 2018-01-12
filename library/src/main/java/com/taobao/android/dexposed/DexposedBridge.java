@@ -118,6 +118,8 @@ public final class DexposedBridge {
 			}
 		}
 
+		Logger.w(TAG, "hook: " + hookMethod + ", newMethod ? " + newMethod);
+
 		callbacks.add(callback);
 		if (newMethod) {
 			if (Runtime.isArt()) {
@@ -176,7 +178,6 @@ public final class DexposedBridge {
 		
 		XC_MethodHook callback = (XC_MethodHook) parameterTypesAndCallback[parameterTypesAndCallback.length-1];
 		Method m = XposedHelpers.findMethodExact(clazz, methodName, parameterTypesAndCallback);
-		Logger.i(TAG, "findAndHookMethod: " + m.toGenericString());
 		Unhook unhook = hookMethod(m, callback);
 		if (!(callback instanceof XC_MethodKeepHook
 				|| callback instanceof XC_MethodKeepReplacement)) {
