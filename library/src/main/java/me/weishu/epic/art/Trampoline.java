@@ -25,8 +25,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import me.weishu.epic.art.arch.ShellCode;
+import me.weishu.epic.art.arch.Thumb2_2;
 import me.weishu.epic.art.entry.Entry;
 import me.weishu.epic.art.entry.Entry64_2;
+import me.weishu.epic.art.entry.Entry_3;
 import me.weishu.epic.art.method.ArtMethod;
 
 class Trampoline {
@@ -145,12 +147,10 @@ class Trampoline {
 
     private byte[] createTrampoline(ArtMethod source){
         final Epic.MethodInfo methodInfo = Epic.getMethodInfo(source.getAddress());
-        final Class<?> returnType = methodInfo.returnType;
 
-//        Method bridgeMethod = Runtime.is64Bit() ? (Build.VERSION.SDK_INT == 23 ? Entry64_2.getBridgeMethod(methodInfo) : Entry64.getBridgeMethod(returnType))
-//                : Entry.getBridgeMethod(returnType);
+        boolean useNew = shellCode.getClass() == Thumb2_2.class;
         Method bridgeMethod = Runtime.is64Bit() ? Entry64_2.getBridgeMethod(methodInfo)
-                : Entry.getBridgeMethod(returnType);
+                : (useNew ? Entry_3.getBridgeMethod(methodInfo) : Entry.getBridgeMethod(methodInfo.returnType));
 
         final ArtMethod target = ArtMethod.of(bridgeMethod);
         long targetAddress = target.getAddress();

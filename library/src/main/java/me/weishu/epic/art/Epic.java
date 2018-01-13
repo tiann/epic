@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import me.weishu.epic.art.arch.Arm64_2;
 import me.weishu.epic.art.arch.ShellCode;
 import me.weishu.epic.art.arch.Thumb2;
+import me.weishu.epic.art.arch.Thumb2_2;
 import me.weishu.epic.art.method.ArtMethod;
 
 /**
@@ -49,6 +50,7 @@ public final class Epic {
 
     private static final Map<Long, Trampoline> scripts = new HashMap<>();
     private static ShellCode ShellCode;
+    private static ShellCode ShellCode2;
 
     static {
         boolean isArm = true; // TODO: 17/11/21 TODO
@@ -68,6 +70,7 @@ public final class Epic {
                 }
             } else if (Runtime.isThumb2()) {
                 ShellCode = new Thumb2();
+                ShellCode2 = new Thumb2_2();
             } else {
                 // todo ARM32
                 Logger.w(TAG, "ARM32, not support now.");
@@ -136,10 +139,26 @@ public final class Epic {
 
         final long key = originEntry;
         final EntryLock lock = EntryLock.obtain(originEntry);
+
+        ShellCode shellCode = ShellCode;
+        boolean isThumb2 = Runtime.isThumb2();
+        if (isThumb2) {
+            boolean useNew = true;
+            for (Class<?> paramType : methodInfo.paramTypes) {
+                if (paramType == long.class || paramType == double.class) {
+                    useNew = false;
+                }
+            }
+            Logger.w(TAG, "use new hook plan? " + useNew);
+            if (useNew) {
+                shellCode = ShellCode2;
+            }
+        }
+
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (lock) {
             if (!scripts.containsKey(key)) {
-                scripts.put(key, new Trampoline(ShellCode, originEntry));
+                scripts.put(key, new Trampoline(shellCode, originEntry));
             }
             Trampoline trampoline = scripts.get(key);
             boolean ret = trampoline.install(artOrigin);

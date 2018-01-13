@@ -257,7 +257,7 @@ public final class DexposedBridge {
 				ArtMethod method = Epic.getBackMethod(artmethod);
 				Object result = method.invoke(thisObject, args);
 				param.setResult(result);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				// log(e); origin throw exception is normal.
 				param.setThrowable(e);
 			}
