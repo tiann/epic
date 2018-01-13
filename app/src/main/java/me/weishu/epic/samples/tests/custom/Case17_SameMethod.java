@@ -14,7 +14,7 @@ public class Case17_SameMethod implements Case {
 
     @Override
     public void hook() {
-        DexposedBridge.findAndHookMethod(Target.class, "add", int.class, int.class, new XC_MethodHook() {
+        DexposedBridge.findAndHookMethod(Target.class, "sameMethod", int.class, int.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
@@ -28,7 +28,7 @@ public class Case17_SameMethod implements Case {
             }
         });
 
-        DexposedBridge.findAndHookMethod(Target.class, "add", int.class, int.class, new XC_MethodHook() {
+        DexposedBridge.findAndHookMethod(Target.class, "sameMethod", int.class, int.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
@@ -45,8 +45,8 @@ public class Case17_SameMethod implements Case {
 
     @Override
     public boolean validate(Object... args) {
-        new Target().add(1, 2);
-        new Target().add(3, 4);
-        return false;
+        new Target().sameMethod(1, 2);
+        new Target().sameMethod(3, 4);
+        return true;
     }
 }

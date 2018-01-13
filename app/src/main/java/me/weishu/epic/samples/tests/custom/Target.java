@@ -48,6 +48,10 @@ public class Target {
         return a + b;
     }
 
+    public int sameMethod(int a, int b) {
+        return a + b;
+    }
+
     public int test3(Object a, int b) {
         Log.i("mylog", "test1, arg1: " + a + " , arg2:" + b);
         return a.hashCode() + b;
