@@ -16,8 +16,8 @@ template = %q{
    
     import android.util.Pair;
    
-    import com.taobao.android.dexposed.DexposedBridge;
-    import com.taobao.android.dexposed.XposedHelpers;
+    import de.robv.android.xposed.DexposedBridge;
+    import de.robv.android.xposed.XposedHelpers;
     import com.taobao.android.dexposed.utility.Logger;
    
     import java.lang.reflect.Method;
