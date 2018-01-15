@@ -36,8 +36,22 @@ public class Target {
         return a.hashCode() + b;
     }
 
-    public int returnConst(int a) {
+    public int returnId(int a) {
         return a;
+    }
+
+    public int returnId2(int a) {
+        return a;
+    }
+
+    public int returnConst1() {
+        //Log.i("mylog", "returnConst1");
+        return -1;
+    }
+
+    public int returnConst2() {
+        Log.i("mylog", "returnConst2");
+        return -1;
     }
 
     public int add(int a, int b) {
