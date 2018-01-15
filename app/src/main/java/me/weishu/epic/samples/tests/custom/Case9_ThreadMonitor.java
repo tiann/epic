@@ -2,11 +2,11 @@ package me.weishu.epic.samples.tests.custom;
 
 import android.util.Log;
 
-import com.taobao.android.dexposed.DexposedBridge;
-import com.taobao.android.dexposed.XC_MethodHook;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import de.robv.android.xposed.DexposedBridge;
+import de.robv.android.xposed.XC_MethodHook;
 
 /**
  * Created by weishu on 17/11/10.
@@ -19,7 +19,7 @@ public class Case9_ThreadMonitor implements Case {
     public void hook() {
         try {
 
-            class ThreadMethodHook extends XC_MethodHook{
+            class ThreadMethodHook extends XC_MethodHook {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                     super.beforeHookedMethod(param);

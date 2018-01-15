@@ -2,9 +2,9 @@ package me.weishu.epic.samples.tests.custom;
 
 import android.util.Log;
 
-import com.taobao.android.dexposed.XposedHelpers;
-
 import java.lang.reflect.Method;
+
+import de.robv.android.xposed.XposedHelpers;
 
 /**
  * Created by weishu on 17/12/13.

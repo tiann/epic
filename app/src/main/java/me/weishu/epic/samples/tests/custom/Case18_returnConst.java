@@ -2,11 +2,11 @@ package me.weishu.epic.samples.tests.custom;
 
 import android.util.Log;
 
-import com.taobao.android.dexposed.DexposedBridge;
-import com.taobao.android.dexposed.XC_MethodHook;
-import com.taobao.android.dexposed.XC_MethodReplacement;
-
 import java.util.Arrays;
+
+import de.robv.android.xposed.DexposedBridge;
+import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodReplacement;
 
 /**
  * Created by weishu on 18/1/11.
@@ -37,20 +37,20 @@ public class Case18_returnConst implements Case {
             }
         });
 
-        DexposedBridge.findAndHookMethod(Target.class, "returnConst1", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                super.beforeHookedMethod(param);
-                param.setResult(12);
-                Log.d(TAG, "beforeHookedMethod11() called with: param = [" + Arrays.toString(param.args) + "]");
-            }
-
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                super.afterHookedMethod(param);
-                Log.d(TAG, "afterHookedMethod11() called with: param = [" + Arrays.toString(param.args) + "]");
-            }
-        });
+//        DexposedBridge.findAndHookMethod(Target.class, "returnConst1", new XC_MethodHook() {
+//            @Override
+//            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//                super.beforeHookedMethod(param);
+//                param.setResult(12);
+//                Log.d(TAG, "beforeHookedMethod11() called with: param = [" + Arrays.toString(param.args) + "]");
+//            }
+//
+//            @Override
+//            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                super.afterHookedMethod(param);
+//                Log.d(TAG, "afterHookedMethod11() called with: param = [" + Arrays.toString(param.args) + "]");
+//            }
+//        });
 
         DexposedBridge.findAndHookMethod(Target.class, "returnConst2", new XC_MethodHook() {
             @Override

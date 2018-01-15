@@ -3,12 +3,12 @@ package me.weishu.epic.samples.tests.custom;
 import android.os.SystemClock;
 import android.util.Log;
 
-import com.taobao.android.dexposed.XposedHelpers;
 import com.taobao.android.dexposed.utility.Debug;
 import com.taobao.android.dexposed.utility.Unsafe;
 
 import java.lang.reflect.Method;
 
+import de.robv.android.xposed.XposedHelpers;
 import me.weishu.epic.art.EpicNative;
 import me.weishu.epic.art.method.ArtMethod;
 

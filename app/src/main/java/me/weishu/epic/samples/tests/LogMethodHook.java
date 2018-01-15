@@ -2,9 +2,9 @@ package me.weishu.epic.samples.tests;
 
 import android.util.Log;
 
-import com.taobao.android.dexposed.XC_MethodHook;
-
 import java.util.Arrays;
+
+import de.robv.android.xposed.XC_MethodHook;
 
 /**
  * Created by weishu on 17/11/13.
