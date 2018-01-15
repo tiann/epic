@@ -258,7 +258,7 @@ public class ArtMethod {
                     Epic.setBackMethod(origin, backup);
                     return backup.invokeInternal(receiver, args);
                 } else {
-                    Logger.i(TAG, "the address is same with last invoke, not moved by gc");
+                    // Logger.i(TAG, "the address is same with last invoke, not moved by gc");
                 }
             }
         }
