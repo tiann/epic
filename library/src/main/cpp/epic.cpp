@@ -252,7 +252,11 @@ jobject epic_getobject(JNIEnv *env, jclass clazz, jlong self, jlong address) {
     LOGV("java vm: %p, self: %p, address: %p", vm, (void*) self, (void*) address);
     jobject object = addWeakGloablReference(vm, (void *) self, (void *) address);
 
-    return object;
+    jobject result = env->NewLocalRef(object);
+
+    env->DeleteWeakGlobalRef(object);
+
+    return result;
 }
 
 jlong epic_getMethodAddress(JNIEnv *env, jclass clazz, jobject method) {
