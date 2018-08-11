@@ -1,6 +1,8 @@
 ## 简介
 
-Epic是一个在虚拟机层面、以Java Method为粒度的 **运行时** AOP Hook框架。简单来说，Epic 就是ART上的 [Dexposed](https://github.com/alibaba/dexposed) 。它可以拦截本进程内部几乎任意的Java方法调用，可用于实现AOP编程、运行时插桩、性能分析、安全审计等。
+Epic是一个在虚拟机层面、以Java Method为粒度的 **运行时** AOP Hook框架。简单来说，Epic 就是ART上的 [Dexposed](https://github.com/alibaba/dexposed)（支持 Android 4.0~9.0）。它可以拦截本进程内部几乎任意的Java方法调用，可用于实现AOP编程、运行时插桩、性能分析、安全审计等。
+
+Epic 被[VirtualXposed](https://github.com/android-hacker/VirtualXposed) 使用，用来实现非Root场景下的Xposed功能，已经经过了较为广泛的验证。
 
 关于Epic的实现原理，可以参考 [本文](http://weishu.me/2017/11/23/dexposed-on-art/)。
 
@@ -17,6 +19,8 @@ dependencies {
 ```
 
 然后就可以使用了。
+
+> 新版本的 epic 并未开源，0.3.6版本对于简单的个人使用场景已经足够了；如果你需要新版本的epic （更好地兼容 Android 8.0，9.0上的支持等），请联系我。
 
 ### 几个例子
 
@@ -75,7 +79,7 @@ DexposedBridge.findAndHookMethod(DexFile.class, "loadDex", String.class, String.
 
 ## 支持情况
 
-目前Epic支持 Android 5.0~ 8.1 的 Thumb2/ARM64指令集；Android O的支持正在计划中，x86/mips/arm32的支持后续也会完成。但是，本项目没有经过任何线上产品的验证，无法保证足够的稳定性；目前仅仅是个人用途（主要是性能分析），欢迎给我提 issue :)
+目前Epic支持 Android 4.0~ 9.0 的 Thumb2/ARM64指令集；x86/mips 的支持后续也会完成。本项目被 [VirtualXposed](https://github.com/android-hacker/VirtualXposed) ，已经被证明比较稳定；但是依然达不到千万级用户量APP的稳定性要求。
 
 Android版本支持情况：
 
@@ -92,6 +96,7 @@ ART     | N (7.0)         | Yes
 ART     | N MR1 (7.1)     | Yes
 ART     | O (8.0)         | Yes
 ART     | O MR1(8.1)      | Yes
+ART     | P (9.0)         | Yes
 
 指令集支持情况：
 
@@ -100,7 +105,7 @@ Runtime  | Arch         | Support
 Dalvik   | All          | Yes
 ART      | Thumb2       | Yes
 ART      | ARM64        | Yes
-ART      | ARM32        | No
+ART      | ARM32        | Yes
 ART      | x86/x86_64   | No
 ART      | mips         | No
 
@@ -108,12 +113,10 @@ ART      | mips         | No
 
 1. 受限于inline hook本身，短方法 (Thum2下指令小于8个字节，ARM64小于16字节) 无法支持。
 2. 被完全内联的方法不支持。
-3. 在支持硬浮点的CPU架构(如armeabi-v7a, arm64-v8a)上，参数包含 double/float 的方法支持可能有问题，还没有进行充分地测试。
-4. Android L 的 arm64 暂不支持。
 
 ## 支持和加入Epic
 
-目前Epic仅仅在 Android 5.0, 5.1, 6.0, 7.0, 7.1, 8.0, 8.1 的个别机型上进行过测试，没有经过大范围的测试，因此很多机型没有覆盖到；欢迎帮助进行兼容性测试，有能力的欢迎贡献代码 :)
+目前Epic仅仅在 Android 4.0~9.0 的个别机型上进行过测试，可能很多机型没有覆盖到；欢迎帮助进行兼容性测试，有能力的欢迎贡献代码 :)
 
 你可以拿出你手头的手机，然后clone本项目到本地，然后build其中的 app 模块，安装这个测试APP到你的手机上，点击一下其中的按钮，如果提示有 「测试不通过」，或者有直接闪退的情况，请把Issue砸向我，不胜感激 ^_^ 
 
