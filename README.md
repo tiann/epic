@@ -6,7 +6,7 @@
 What is it?
 -----------
 
-Epic is the continution of [Dexposed](https://github.com/alibaba/dexposed) on ART(Supporting 4.0~8.1).
+Epic is the continution of [Dexposed](https://github.com/alibaba/dexposed) on ART(Supporting 4.0~9.0).
 
 > Dexposed is a powerful yet non-invasive runtime [AOP (Aspect-oriented Programming)](http://en.wikipedia.org/wiki/Aspect-oriented_programming) framework
 for Android app development, based on the work of open-source [Xposed](https://github.com/rovo89/Xposed) [framework](https://github.com/rovo89/XposedBridge) project.
@@ -41,6 +41,8 @@ dependencies {
 ```
 
 Everything is ready.
+
+> Newer version of epic is not open source, v0.3.6 is enough for test or personal usage. If you want for the newer version (better compatibility for Android 8.0+ and support for Android 9.0), please contact me.
 
 Basic usage
 -----------
@@ -117,6 +119,7 @@ ART     | N (7.0)         | Yes
 ART     | N MR1 (7.1)     | Yes
 ART     | O (8.0)         | Yes
 ART     | O MR1(8.1)      | Yes
+ART     | P (9.0)         | Yes
 
 And the architecture support status:
 
@@ -134,8 +137,6 @@ Known Issues
 
 1. Short method (instruction less 8 bytes on thumb2 or less 16bytes in ARM64) are not supported.
 2. Fully inlined methods are not supported.
-3. Method parameters which contains float/double are not fully test on platform which support hardware float point(armeabi-v7a, arm64-v8a)
-4. arm64 in Android L is not supported.
 
 Contribute
 ----------
