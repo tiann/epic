@@ -79,7 +79,7 @@ DexposedBridge.findAndHookMethod(DexFile.class, "loadDex", String.class, String.
 
 ## 支持情况
 
-目前Epic支持 Android 4.0~ 9.0 的 Thumb2/ARM64指令集；x86/mips 的支持后续也会完成。本项目被 [VirtualXposed](https://github.com/android-hacker/VirtualXposed) ，已经被证明比较稳定；但是依然达不到千万级用户量APP的稳定性要求。
+目前Epic支持 Android 4.0~ 9.0 的 Thumb2/ARM64指令集。本项目被 [VirtualXposed](https://github.com/android-hacker/VirtualXposed) ，已经被证明比较稳定。epic 对某些函数的 hook支持不是很好，但如果选好合适的被hook函数，可以做到非常稳定。目前，手机QQ/优酷已经在产品中使用 epic。
 
 Android版本支持情况：
 
