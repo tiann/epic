@@ -2,7 +2,7 @@
 
 Epic是一个在虚拟机层面、以Java Method为粒度的 **运行时** AOP Hook框架。简单来说，Epic 就是ART上的 [Dexposed](https://github.com/alibaba/dexposed)（支持 Android 4.0~9.0）。它可以拦截本进程内部几乎任意的Java方法调用，可用于实现AOP编程、运行时插桩、性能分析、安全审计等。
 
-Epic 被[VirtualXposed](https://github.com/android-hacker/VirtualXposed) 使用，用来实现非Root场景下的Xposed功能，已经经过了较为广泛的验证。
+Epic 被[VirtualXposed](https://github.com/android-hacker/VirtualXposed) 以及 [太极](https://www.coolapk.com/apk/me.weishu.exp)使用，用来实现非Root场景下的Xposed功能，已经经过了较为广泛的验证。
 
 关于Epic的实现原理，可以参考 [本文](http://weishu.me/2017/11/23/dexposed-on-art/)。
 
@@ -20,7 +20,7 @@ dependencies {
 
 然后就可以使用了。
 
-> 新版本的 epic 并未开源，0.3.6版本对于简单的个人使用场景已经足够了；如果你需要新版本的epic （更好地兼容 Android 8.0，9.0上的支持等），请联系我。
+> 新版本的 epic 并未开源，0.3.6 版本对于简单的个人使用场景已经足够了；如果你需要新版本的epic （更好地兼容 Android 8.0，9.0上的支持等），请联系我(twsxtd@gmail.com)。在 0.11.4 版本之后，其稳定性已经非常卓越。
 
 ### 几个例子
 
@@ -79,7 +79,7 @@ DexposedBridge.findAndHookMethod(DexFile.class, "loadDex", String.class, String.
 
 ## 支持情况
 
-目前Epic支持 Android 4.0~ 9.0 的 Thumb2/ARM64指令集。本项目被 [VirtualXposed](https://github.com/android-hacker/VirtualXposed) ，已经被证明比较稳定。epic 对某些函数的 hook支持不是很好，但如果选好合适的被hook函数，可以做到非常稳定。目前，手机QQ/优酷已经在产品中使用 epic。
+目前Epic支持 Android 4.0~ 9.0 的 Thumb2/ARM64指令集。本项目被 [VirtualXposed](https://github.com/android-hacker/VirtualXposed) 使用，已经被证明比较稳定。epic 对某些函数的 hook支持不是很好，但如果选好合适的被hook函数，可以做到非常稳定。目前，手机QQ/优酷已经在产品中使用 epic。
 
 Android版本支持情况：
 
@@ -114,12 +114,6 @@ ART      | mips         | No
 1. 受限于inline hook本身，短方法 (Thum2下指令小于8个字节，ARM64小于16字节) 无法支持。
 2. 被完全内联的方法不支持。
 
-## 支持和加入Epic
-
-目前Epic仅仅在 Android 4.0~9.0 的个别机型上进行过测试，可能很多机型没有覆盖到；欢迎帮助进行兼容性测试，有能力的欢迎贡献代码 :)
-
-你可以拿出你手头的手机，然后clone本项目到本地，然后build其中的 app 模块，安装这个测试APP到你的手机上，点击一下其中的按钮，如果提示有 「测试不通过」，或者有直接闪退的情况，请把Issue砸向我，不胜感激 ^_^ 
-
 ## 致谢
 
 1. [Dexposed](https://github.com/alibaba/dexposed)
@@ -128,8 +122,6 @@ ART      | mips         | No
 4. [Nougat_dlfunctions](https://github.com/avs333/Nougat_dlfunctions.git)
 
 
-## 交流和讨论
+## 联系我
 
 twsxtd@gmail.com
-
-[交流群](https://gitter.im/android-hacker/epic?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) 
