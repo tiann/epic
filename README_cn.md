@@ -2,7 +2,7 @@
 
 Epic是一个在虚拟机层面、以Java Method为粒度的 **运行时** AOP Hook框架。简单来说，Epic 就是ART上的 [Dexposed](https://github.com/alibaba/dexposed)（支持 Android 4.0~9.0）。它可以拦截本进程内部几乎任意的Java方法调用，可用于实现AOP编程、运行时插桩、性能分析、安全审计等。
 
-Epic 被[VirtualXposed](https://github.com/android-hacker/VirtualXposed) 以及 [太极](https://www.coolapk.com/apk/me.weishu.exp)使用，用来实现非Root场景下的Xposed功能，已经经过了较为广泛的验证。
+Epic 被[VirtualXposed](https://github.com/android-hacker/VirtualXposed) 以及 [太极](https://www.coolapk.com/apk/me.weishu.exp)使用，用来实现非Root场景下的Xposed功能，已经经过了相当广泛的验证。
 
 关于Epic的实现原理，可以参考 [本文](http://weishu.me/2017/11/23/dexposed-on-art/)。
 
@@ -20,7 +20,7 @@ dependencies {
 
 然后就可以使用了。
 
-> 新版本的 epic 并未开源，0.3.6 版本对于简单的个人使用场景已经足够了；如果你需要新版本的epic （更好地兼容 Android 8.0，9.0上的支持等），请联系我(twsxtd@gmail.com)。在 0.11.4 版本之后，其稳定性已经非常卓越。
+> 新版本的 epic 并未开源，0.3.6 版本对于简单的个人使用场景已经足够了；如果你需要新版本的epic （更好地兼容 Android 8.0,9.0,10.0上的支持等），请联系我(twsxtd@gmail.com)。在 0.17.0 版本之后，其稳定性已经非常卓越。
 
 ### 几个例子
 
@@ -79,7 +79,7 @@ DexposedBridge.findAndHookMethod(DexFile.class, "loadDex", String.class, String.
 
 ## 支持情况
 
-目前Epic支持 Android 4.0~ 9.0 的 Thumb2/ARM64指令集。本项目被 [VirtualXposed](https://github.com/android-hacker/VirtualXposed) 使用，已经被证明比较稳定。epic 对某些函数的 hook支持不是很好，但如果选好合适的被hook函数，可以做到非常稳定。目前，手机QQ/优酷已经在产品中使用 epic。
+目前Epic支持 Android 4.0~ 9.0 的 Thumb2/ARM64指令集。本项目被 [VirtualXposed](https://github.com/android-hacker/VirtualXposed) 和 [太极](http://taichi.cool)使用，经过了数百万用户的验证，已经被证明非常稳定。目前，手机QQ已经在产品中使用 epic。
 
 Android版本支持情况：
 
@@ -97,6 +97,7 @@ ART     | N MR1 (7.1)     | Yes
 ART     | O (8.0)         | Yes
 ART     | O MR1(8.1)      | Yes
 ART     | P (9.0)         | Yes
+ART     | Q (10.0 beta)   | Yes
 
 指令集支持情况：
 
