@@ -6,7 +6,7 @@
 What is it?
 -----------
 
-Epic is the continution of [Dexposed](https://github.com/alibaba/dexposed) on ART(Supporting 4.0~9.0).
+Epic is the continuation of [Dexposed](https://github.com/alibaba/dexposed) on ART (Supports 4.0 ~ 10.0).
 
 > Dexposed is a powerful yet non-invasive runtime [AOP (Aspect-oriented Programming)](http://en.wikipedia.org/wiki/Aspect-oriented_programming) framework
 for Android app development, based on the work of open-source [Xposed](https://github.com/rovo89/Xposed) [framework](https://github.com/rovo89/XposedBridge) project.
@@ -22,6 +22,7 @@ Epic keeps the same API and all capability of Dexposed, you can do anything whic
 
 Typical use-cases
 -----------------
+
 * Classic AOP programming
 * Instrumentation (for testing, performance monitoring and etc.)
 * Security audit (sensitive api check,Smash shell)
@@ -30,6 +31,7 @@ Typical use-cases
 
 Integration
 -----------
+
 Directly add epic aar to your project as compile libraries, it contains a jar file "dexposedbridge.jar" two so files "libdexposed.so libepic.so" from 'epic' directory.
 
 Gradle dependency like following(jcenter):
@@ -102,9 +104,10 @@ Checkout the `sample` project to find out more.
 
 Support
 ----------
-Epic support all dalvik runtime arm architecture devices from Android 2.3 to 4.4 (no include 3.0), which inherits from Dexposed. Further more, it support ART thumb2 and arm64 architecture from Android 5.0 to 8.1. arm32, x86, x86_64 and mips are not supported now. The stability is not proved in any online product, it is only personal use now(mainly for performance analysis), Welcome to any compatibility issues or PRs.
 
-Follow is support status.
+Epic support all Dalvik runtime arm architecture devices from Android 2.3 to 4.4 (no include 3.0), which inherits from Dexposed. Further more, it support ART thumb2 and arm64 architecture from Android 5.0 to 8.1. arm32, x86, x86_64 and mips are not supported now. The stability is not proved in any online product, it is only for personal use now (mainly for performance analysis), Welcome to any compatibility issues or PRs.
+
+Following is support status.
 
 Runtime | Android Version | Support
 ------  | --------------- | --------
@@ -136,22 +139,23 @@ Known Issues
 -------------
 
 1. Short method (instruction less 8 bytes on thumb2 or less 16bytes in ARM64) are not supported.
-2. Fully inlined methods are not supported.
+2. Fully inline methods are not supported.
 
 Contribute
 ----------
+
 We are open to constructive contributions from the community, especially pull request
 and quality bug report. **Currently, the implementation for ART is not proved in large scale, we value your help to test or improve the implementation.**
 
-You can clone this project, build and install the sample app, just make some click  in your device, if some bugs/crash occurs, please file an issue or a pull request, I am very appreciative :)
+You can clone this project, build and install the sample app, just make some click  in your device, if some bugs/crash occurs, please file an issue or a pull request, I would appreciate it :)
 
 Thanks
 -------
+
 1. [Dexposed](https://github.com/alibaba/dexposed)
 2. [Xposed](http://repo.xposed.info/module/de.robv.android.xposed.installer)
 3. [mar-v-in/ArtHook](https://github.com/mar-v-in/ArtHook)
 4. [Nougat_dlfunctions](https://github.com/avs333/Nougat_dlfunctions.git)
-
 
 Contact me
 ----------
