@@ -79,7 +79,7 @@ DexposedBridge.findAndHookMethod(DexFile.class, "loadDex", String.class, String.
 
 ## 支持情况
 
-目前 Epic 支持 Android 4.0 ~ 10.0 的 Thumb2/ARM64 指令集。本项目被 [VirtualXposed](https://github.com/android-hacker/VirtualXposed) 和 [太极](http://taichi.cool) 使用，经过了数百万用户的验证，已经被证明非常稳定。目前，手机 QQ 已经在产品中使用 Epic。
+目前 Epic 支持 Android 4.0 ~ 10.0 的 Thumb-2/ARM64 指令集。本项目被 [VirtualXposed](https://github.com/android-hacker/VirtualXposed) 和 [太极](http://taichi.cool) 使用，经过了数百万用户的验证，已经被证明非常稳定。目前，手机 QQ 已经在产品中使用 Epic。
 
 Android 版本支持情况：
 
@@ -104,7 +104,7 @@ ART     | Q (10.0 beta)   | Yes
 Runtime  | Arch         | Support
 -------- | ------------ | --------
 Dalvik   | All          | Yes
-ART      | Thumb2       | Yes
+ART      | Thumb-2       | Yes
 ART      | ARM64        | Yes
 ART      | ARM32        | Yes
 ART      | x86/x86_64   | No
@@ -112,7 +112,7 @@ ART      | mips         | No
 
 ## 已知问题
 
-1. 受限于 inline hook 本身，短方法 (Thum2 下指令小于 8 个字节，ARM64 小于 16 字节) 无法支持。
+1. 受限于 inline hook 本身，短方法 (Thumb-2 下指令小于 8 个字节，ARM64 小于 16 字节) 无法支持。
 2. 被完全内联的方法不支持。
 
 ## 致谢
