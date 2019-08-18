@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import me.weishu.epic.art.arch.Arm64_2;
+import me.weishu.epic.art.arch.Arm64;
 import me.weishu.epic.art.arch.ShellCode;
 import me.weishu.epic.art.arch.Thumb2;
 import me.weishu.epic.art.method.ArtMethod;
@@ -53,28 +53,20 @@ public final class Epic {
     static {
         boolean isArm = true; // TODO: 17/11/21 TODO
         int apiLevel = Build.VERSION.SDK_INT;
+        boolean thumb2 = true;
         if (isArm) {
             if (Runtime.is64Bit()) {
-                switch (apiLevel) {
-                    case Build.VERSION_CODES.M:
-                        ShellCode = new Arm64_2();
-                        break;
-                    case Build.VERSION_CODES.N:
-                    case Build.VERSION_CODES.N_MR1:
-                    case Build.VERSION_CODES.O:
-                    case Build.VERSION_CODES.O_MR1:
-                        ShellCode = new Arm64_2();
-                        break;
-                }
+                ShellCode = new Arm64();
             } else if (Runtime.isThumb2()) {
                 ShellCode = new Thumb2();
             } else {
-                // todo ARM32
+                thumb2 = false;
+                ShellCode = new Thumb2();
                 Logger.w(TAG, "ARM32, not support now.");
             }
         }
         if (ShellCode == null) {
-            throw new RuntimeException("Do not support this ARCH now!! API LEVEL:" + apiLevel);
+            throw new RuntimeException("Do not support this ARCH now!! API LEVEL:" + apiLevel + " thumb2 ? : " + thumb2);
         }
         Logger.i(TAG, "Using: " + ShellCode.getName());
     }

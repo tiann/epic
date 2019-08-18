@@ -18,6 +18,8 @@ package me.weishu.epic.art.method;
 
 import android.os.Build;
 
+import com.taobao.android.dexposed.utility.Debug;
+import com.taobao.android.dexposed.utility.Logger;
 import com.taobao.android.dexposed.utility.Runtime;
 
 import java.nio.ByteBuffer;
@@ -29,6 +31,8 @@ import me.weishu.epic.art.EpicNative;
  * The Offset of field in an ArtMethod
  */
 class Offset {
+
+    private static final String TAG = "Offset";
 
     /**
      * the offset of the entry point
@@ -112,14 +116,17 @@ class Offset {
         ART_ACCESS_FLAG_OFFSET.setLength(Offset.BitWidth.DWORD);
 
         final int apiLevel = Build.VERSION.SDK_INT;
-        if (apiLevel > 27) {
-            throw new RuntimeException("API LEVEL: " + apiLevel + " is not supported now : (");
-        }
 
         if (Runtime.is64Bit()) {
             ART_QUICK_CODE_OFFSET.setLength(Offset.BitWidth.QWORD);
             ART_JNI_ENTRY_OFFSET.setLength(BitWidth.QWORD);
             switch (apiLevel) {
+                case Build.VERSION_CODES.Q:
+                case Build.VERSION_CODES.P:
+                    ART_QUICK_CODE_OFFSET.setOffset(32);
+                    ART_JNI_ENTRY_OFFSET.setOffset(24);
+                    ART_ACCESS_FLAG_OFFSET.setOffset(4);
+                    break;
                 case Build.VERSION_CODES.O_MR1:
                 case Build.VERSION_CODES.O:
                     ART_QUICK_CODE_OFFSET.setOffset(40);
@@ -160,6 +167,12 @@ class Offset {
             ART_QUICK_CODE_OFFSET.setLength(Offset.BitWidth.DWORD);
             ART_JNI_ENTRY_OFFSET.setLength(BitWidth.DWORD);
             switch (apiLevel) {
+                case Build.VERSION_CODES.Q:
+                case Build.VERSION_CODES.P:
+                    ART_QUICK_CODE_OFFSET.setOffset(24);
+                    ART_JNI_ENTRY_OFFSET.setOffset(20);
+                    ART_ACCESS_FLAG_OFFSET.setOffset(4);
+                    break;
                 case Build.VERSION_CODES.O_MR1:
                 case Build.VERSION_CODES.O:
                     ART_QUICK_CODE_OFFSET.setOffset(28);
@@ -196,6 +209,12 @@ class Offset {
                 default:
                     throw new RuntimeException("API LEVEL: " + apiLevel + " is not supported now : (");
             }
+        }
+        if (Debug.DEBUG) {
+            Logger.i(TAG, "quick code offset: " + ART_QUICK_CODE_OFFSET.getOffset());
+            Logger.i(TAG, "access flag offset: " + ART_ACCESS_FLAG_OFFSET.getOffset());
+            Logger.i(TAG, "jni code offset: " + ART_JNI_ENTRY_OFFSET.getOffset());
+
         }
     }
 }
