@@ -380,7 +380,7 @@ public class Entry {
             } else if (type == double.class) {
                 return byteBuffer.getDouble();
             } else if (type == boolean.class) {
-                return byteBuffer.getInt() == 0;
+                return byteBuffer.getInt() != 0;
             } else {
                 throw new RuntimeException("unknown type:" + type);
             }
