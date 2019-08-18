@@ -2,11 +2,11 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 2G
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
 
@@ -34,6 +34,9 @@ android {
         cmake {
             path 'src/main/cpp/CMakeLists.txt'
         }
+    }
+    lintOptions {
+        abortOnError false
     }
 }
 
