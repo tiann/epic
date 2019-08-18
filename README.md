@@ -38,13 +38,13 @@ Gradle dependency like following(jcenter):
 
 ```groovy
 dependencies {
-    compile 'me.weishu:epic:0.3.6'
+    compile 'me.weishu:epic:0.6.0'
 }
 ```
 
 Everything is ready.
 
-> Newer version of epic is not open source, v0.3.6 is enough for test or personal usage. If you want for the newer version (better compatibility for Android 8.0+ and support for Android 9.0), please contact me.
+> If you want for the stable version (better compatibility for Android 8.0+ and support for Android 9.0), please contact me.
 
 Basic usage
 -----------
@@ -123,6 +123,7 @@ ART     | N MR1 (7.1)     | Yes
 ART     | O (8.0)         | Yes
 ART     | O MR1(8.1)      | Yes
 ART     | P (9.0)         | Yes
+ART     | Q (10.0)        | Yes
 
 And the architecture support status:
 
