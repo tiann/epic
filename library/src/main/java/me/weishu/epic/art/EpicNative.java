@@ -19,12 +19,13 @@ package me.weishu.epic.art;
 import android.util.Log;
 
 import com.taobao.android.dexposed.DeviceCheck;
-import com.taobao.android.dexposed.XposedHelpers;
 import com.taobao.android.dexposed.utility.Debug;
 import com.taobao.android.dexposed.utility.Logger;
 import com.taobao.android.dexposed.utility.Unsafe;
 
 import java.lang.reflect.Member;
+
+import de.robv.android.xposed.XposedHelpers;
 
 import static com.taobao.android.dexposed.utility.Debug.addrHex;
 

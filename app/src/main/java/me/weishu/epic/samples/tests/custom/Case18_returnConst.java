@@ -2,10 +2,10 @@ package me.weishu.epic.samples.tests.custom;
 
 import android.util.Log;
 
-import com.taobao.android.dexposed.DexposedBridge;
-import com.taobao.android.dexposed.XC_MethodHook;
-
 import java.util.Arrays;
+
+import de.robv.android.xposed.DexposedBridge;
+import de.robv.android.xposed.XC_MethodHook;
 
 /**
  * Created by weishu on 18/1/11.

@@ -41,7 +41,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "me.weishu:free_reflection:2.1.0"
+    api 'me.weishu.exposed:exposed-xposedapi:0.4.5'
 }
 
 apply plugin: 'com.novoda.bintray-release'
@@ -50,7 +52,7 @@ publish {
     userOrg = 'twsxtd'//
     groupId = 'me.weishu'
     artifactId = 'epic'
-    publishVersion = '0.6.0'
+    publishVersion = '0.6.2-c'
     desc = 'Android Java AOP Method Hook (Dexposed on ART)'
     website = 'https://github.com/tiann/epic'
 }

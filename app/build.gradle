@@ -10,6 +10,11 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            ndkBuild {
+                abiFilters "armeabi-v7a", "x86"
+            }
+        }
     }
     buildTypes {
         release {
@@ -28,7 +33,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(":library")
-    compile 'com.qmuiteam:qmui:1.0.4'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(":library")
+    implementation 'com.qmuiteam:qmui:1.0.4'
 }

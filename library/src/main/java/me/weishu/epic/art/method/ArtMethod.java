@@ -19,7 +19,6 @@ package me.weishu.epic.art.method;
 import android.os.Build;
 import android.util.Log;
 
-import com.taobao.android.dexposed.XposedHelpers;
 import com.taobao.android.dexposed.utility.Logger;
 import com.taobao.android.dexposed.utility.NeverCalled;
 import com.taobao.android.dexposed.utility.Unsafe;
@@ -32,6 +31,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
 
+import de.robv.android.xposed.XposedHelpers;
 import me.weishu.epic.art.Epic;
 import me.weishu.epic.art.EpicNative;
 

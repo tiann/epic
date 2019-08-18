@@ -1,7 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
 
     package="me.weishu.epic">
 
+    <uses-sdk tools:overrideLibrary="de.robv.android.xposed" />
     <application android:label="@string/app_name"
         android:supportsRtl="true">
 

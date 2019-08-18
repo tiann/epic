@@ -19,7 +19,7 @@ package me.weishu.epic.art.entry;
 import android.os.Build;
 import android.util.Pair;
 
-import com.taobao.android.dexposed.DexposedBridge;
+import de.robv.android.xposed.DexposedBridge;
 import com.taobao.android.dexposed.utility.Debug;
 import com.taobao.android.dexposed.utility.Logger;
 

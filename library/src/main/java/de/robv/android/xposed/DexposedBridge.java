@@ -17,16 +17,12 @@
  * limitations under the License.
  */
 
-package com.taobao.android.dexposed;
+package de.robv.android.xposed;
 
+import android.app.AndroidAppHelper;
 import android.os.Build;
 import android.util.Log;
 
-import com.taobao.android.dexposed.XC_MethodHook.MethodHookParam;
-import com.taobao.android.dexposed.XC_MethodHook.Unhook;
-import com.taobao.android.dexposed.XC_MethodHook.XC_MethodKeepHook;
-import com.taobao.android.dexposed.XC_MethodReplacement.XC_MethodKeepReplacement;
-import com.taobao.android.dexposed.XposedHelpers.InvocationTargetError;
 import com.taobao.android.dexposed.utility.Logger;
 import com.taobao.android.dexposed.utility.Runtime;
 
@@ -44,23 +40,22 @@ import java.util.Set;
 
 import me.weishu.epic.art.Epic;
 import me.weishu.epic.art.method.ArtMethod;
+import me.weishu.reflection.Reflection;
 
-import static com.taobao.android.dexposed.XposedHelpers.getIntField;
-
+import static de.robv.android.xposed.XposedHelpers.getIntField;
 
 public final class DexposedBridge {
 
 	static {
 		try {
-			if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT
-					&& android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1){
+			if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
 				System.loadLibrary("epic");
 			} else if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH){
 				System.loadLibrary("dexposed");
 			} else {
 				throw new RuntimeException("unsupported api level: " + Build.VERSION.SDK_INT);
 			}
-
+			Reflection.unseal(AndroidAppHelper.currentApplication());
 		} catch (Throwable e) {
 			log(e);
 		}
@@ -76,7 +71,7 @@ public final class DexposedBridge {
 	private static final Map<Member, CopyOnWriteSortedSet<XC_MethodHook>> hookedMethodCallbacks
 									= new HashMap<Member, CopyOnWriteSortedSet<XC_MethodHook>>();
 
-	private static final ArrayList<Unhook> allUnhookCallbacks = new ArrayList<Unhook>();
+	private static final ArrayList<XC_MethodHook.Unhook> allUnhookCallbacks = new ArrayList<XC_MethodHook.Unhook>();
 
 
 	/**
@@ -98,11 +93,11 @@ public final class DexposedBridge {
 
 	/**
 	 * Hook any method with the specified callback
-	 * 
+	 *
 	 * @param hookMethod The method to be hooked
-	 * @param callback 
+	 * @param callback
 	 */
-	public static Unhook hookMethod(Member hookMethod, XC_MethodHook callback) {
+	public static XC_MethodHook.Unhook hookMethod(Member hookMethod, XC_MethodHook callback) {
 		if (!(hookMethod instanceof Method) && !(hookMethod instanceof Constructor<?>)) {
 			throw new IllegalArgumentException("only methods and constructors can be hooked");
 		}
@@ -160,45 +155,42 @@ public final class DexposedBridge {
 			callbacks = hookedMethodCallbacks.get(hookMethod);
 			if (callbacks == null)
 				return;
-		}	
+		}
 		callbacks.remove(callback);
 	}
 
-	public static Set<Unhook> hookAllMethods(Class<?> hookClass, String methodName, XC_MethodHook callback) {
-		Set<Unhook> unhooks = new HashSet<Unhook>();
+	public static Set<XC_MethodHook.Unhook> hookAllMethods(Class<?> hookClass, String methodName, XC_MethodHook callback) {
+		Set<XC_MethodHook.Unhook> unhooks = new HashSet<XC_MethodHook.Unhook>();
 		for (Member method : hookClass.getDeclaredMethods())
 			if (method.getName().equals(methodName))
 				unhooks.add(hookMethod(method, callback));
 		return unhooks;
 	}
-	
-	public static Unhook findAndHookMethod(Class<?> clazz, String methodName, Object... parameterTypesAndCallback) {
+
+	public static XC_MethodHook.Unhook findAndHookMethod(Class<?> clazz, String methodName, Object... parameterTypesAndCallback) {
 		if (parameterTypesAndCallback.length == 0 || !(parameterTypesAndCallback[parameterTypesAndCallback.length-1] instanceof XC_MethodHook))
 			throw new IllegalArgumentException("no callback defined");
-		
+
 		XC_MethodHook callback = (XC_MethodHook) parameterTypesAndCallback[parameterTypesAndCallback.length-1];
 		Method m = XposedHelpers.findMethodExact(clazz, methodName, parameterTypesAndCallback);
-		Unhook unhook = hookMethod(m, callback);
-		if (!(callback instanceof XC_MethodKeepHook
-				|| callback instanceof XC_MethodKeepReplacement)) {
-			synchronized (allUnhookCallbacks) {
-				allUnhookCallbacks.add(unhook);
-			}
+		XC_MethodHook.Unhook unhook = hookMethod(m, callback);
+		synchronized (allUnhookCallbacks) {
+			allUnhookCallbacks.add(unhook);
 		}
 		return unhook;
 	}
-	
+
 	public static void unhookAllMethods() {
 		synchronized (allUnhookCallbacks) {
 			for (int i = 0; i < allUnhookCallbacks.size(); i++) {
-				((Unhook) allUnhookCallbacks.get(i)).unhook();
+				((XC_MethodHook.Unhook) allUnhookCallbacks.get(i)).unhook();
 			}
 			allUnhookCallbacks.clear();
 		}
 	}
-	
-	public static Set<Unhook> hookAllConstructors(Class<?> hookClass, XC_MethodHook callback) {
-		Set<Unhook> unhooks = new HashSet<Unhook>();
+
+	public static Set<XC_MethodHook.Unhook> hookAllConstructors(Class<?> hookClass, XC_MethodHook callback) {
+		Set<XC_MethodHook.Unhook> unhooks = new HashSet<XC_MethodHook.Unhook>();
 		for (Member constructor : hookClass.getDeclaredConstructors())
 			unhooks.add(hookMethod(constructor, callback));
 		return unhooks;
@@ -225,7 +217,7 @@ public final class DexposedBridge {
 			}
 		}
 
-		MethodHookParam param = new MethodHookParam();
+		XC_MethodHook.MethodHookParam param = new XC_MethodHook.MethodHookParam();
 		param.method  = (Member) (artmethod).getExecutable();
 		param.thisObject = thisObject;
 		param.args = args;
@@ -335,7 +327,7 @@ public final class DexposedBridge {
 			}
 		}
 
-		MethodHookParam param = new MethodHookParam();
+		XC_MethodHook.MethodHookParam param = new XC_MethodHook.MethodHookParam();
 		param.method  = method;
 		param.thisObject = thisObject;
 		param.args = args;
@@ -396,16 +388,16 @@ public final class DexposedBridge {
 		else
 			return param.getResult();
 	}
-	
 
-	
+
+
 	private native static Object invokeSuperNative(Object obj, Object[] args, Member method, Class<?> declaringClass,
             Class<?>[] parameterTypes, Class<?> returnType, int slot)
                     throws IllegalAccessException, IllegalArgumentException,
                             InvocationTargetException;
-	
+
 	public static Object invokeSuper(Object obj, Member method, Object... args) throws NoSuchFieldException {
-		
+
 		try {
 			int slot = 0;
 			if(!Runtime.isArt()) {
@@ -421,16 +413,16 @@ public final class DexposedBridge {
 		} catch (IllegalArgumentException e) {
 			throw e;
 		} catch (InvocationTargetException e) {
-			throw new InvocationTargetError(e.getCause());
+			throw new XposedHelpers.InvocationTargetError(e.getCause());
 		}
 	}
-	
+
 	/**
 	 * Intercept every call to the specified method and call a handler function instead.
 	 * @param method The method to intercept
 	 */
 	private native synchronized static void hookMethodNative(Member method, Class<?> declaringClass, int slot, Object additionalInfo);
-	
+
 	private native static Object invokeOriginalMethodNative(Member method, int methodId,
 			Class<?>[] parameterTypes, Class<?> returnType, Object thisObject, Object[] args)
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
@@ -439,7 +431,7 @@ public final class DexposedBridge {
 	/**
 	 * Basically the same as {@link Method#invoke}, but calls the original method
 	 * as it was before the interception by Xposed. Also, access permissions are not checked.
-	 * 
+	 *
 	 * @param method Method to be called
 	 * @param thisObject For non-static calls, the "this" pointer
 	 * @param args Arguments for the method call as Object[] array
@@ -517,7 +509,7 @@ public final class DexposedBridge {
 			elements = newElements;
 			return true;
 		}
-		
+
 		public synchronized void clear(){
 			elements = EMPTY_ARRAY;
 		}

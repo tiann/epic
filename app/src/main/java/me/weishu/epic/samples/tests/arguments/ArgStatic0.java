@@ -1,7 +1,7 @@
 package me.weishu.epic.samples.tests.arguments;
 
-import com.taobao.android.dexposed.DexposedBridge;
-
+import de.robv.android.xposed.DexposedBridge;
+import de.robv.android.xposed.XC_MethodHook;
 import me.weishu.epic.samples.tests.LogMethodHook;
 import me.weishu.epic.samples.tests.TestCase;
 
@@ -22,7 +22,7 @@ public class ArgStatic0 extends TestCase {
     public void test() {
         DexposedBridge.findAndHookMethod(ArgumentTarget.class, "arg0", new LogMethodHook() {
             @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+            protected void beforeHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
                 beforeCalled = true;
             }

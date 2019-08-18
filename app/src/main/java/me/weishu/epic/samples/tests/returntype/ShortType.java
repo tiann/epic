@@ -1,6 +1,6 @@
 package me.weishu.epic.samples.tests.returntype;
 
-import com.taobao.android.dexposed.DexposedBridge;
+import de.robv.android.xposed.DexposedBridge;
 
 import me.weishu.epic.samples.tests.LogMethodHook;
 import me.weishu.epic.samples.tests.TestCase;

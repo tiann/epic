@@ -16,8 +16,6 @@
 
 package me.weishu.epic.art.entry;
 
-import com.taobao.android.dexposed.DexposedBridge;
-import com.taobao.android.dexposed.XposedHelpers;
 import com.taobao.android.dexposed.utility.Logger;
 
 import java.lang.reflect.Method;
@@ -27,6 +25,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.robv.android.xposed.DexposedBridge;
+import de.robv.android.xposed.XposedHelpers;
 import me.weishu.epic.art.Epic;
 import me.weishu.epic.art.EpicNative;
 
