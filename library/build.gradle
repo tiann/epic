@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 27
+        targetSdkVersion 2G
         versionCode 1
         versionName "1.0"
 
@@ -47,7 +47,7 @@ publish {
     userOrg = 'twsxtd'//
     groupId = 'me.weishu'
     artifactId = 'epic'
-    publishVersion = '0.3.6'
+    publishVersion = '0.6.0'
     desc = 'Android Java AOP Method Hook (Dexposed on ART)'
     website = 'https://github.com/tiann/epic'
 }
