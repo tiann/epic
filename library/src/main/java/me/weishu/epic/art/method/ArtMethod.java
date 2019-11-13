@@ -19,9 +19,9 @@ package me.weishu.epic.art.method;
 import android.os.Build;
 import android.util.Log;
 
+import com.taobao.android.dexposed.utility.Debug;
 import com.taobao.android.dexposed.utility.Logger;
 import com.taobao.android.dexposed.utility.NeverCalled;
-import com.taobao.android.dexposed.utility.Unsafe;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
@@ -30,9 +30,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import de.robv.android.xposed.XposedHelpers;
-import me.weishu.epic.art.Epic;
 import me.weishu.epic.art.EpicNative;
 
 /**
@@ -48,11 +48,6 @@ public class ArtMethod {
      * generally, it was the address of art::mirror::ArtMethod. @{link #objectAddress}
      */
     private long address;
-
-    /**
-     * The address of the java method(Java Object's address), which may be move from gc.
-     */
-    private long objectAddress;
 
     /**
      * the origin object if this is a constructor
@@ -94,10 +89,8 @@ public class ArtMethod {
     private void init() {
         if (constructor != null) {
             address = EpicNative.getMethodAddress(constructor);
-            objectAddress = Unsafe.getObjectAddress(constructor);
         } else {
             address = EpicNative.getMethodAddress(method);
-            objectAddress = Unsafe.getObjectAddress(method);
         }
     }
 
@@ -250,13 +243,15 @@ public class ArtMethod {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             if (origin != null) {
-                long currentAddress = Unsafe.getObjectAddress(getExecutable());
-                if (currentAddress != objectAddress) {
-                    final ArtMethod backup = origin.backup();
-                    Logger.i(TAG, "the address of java method was moved by gc, backup it now! origin address: 0x"
-                            + Long.toHexString(objectAddress) + " , currentAddress: 0x" + Long.toHexString(currentAddress));
-                    Epic.setBackMethod(origin, backup);
-                    return backup.invokeInternal(receiver, args);
+                byte[] currentAddress = EpicNative.get(origin.address, 4);
+                byte[] backupAddress = EpicNative.get(address, 4);
+                if (!Arrays.equals(currentAddress, backupAddress)) {
+                    if (Debug.DEBUG) {
+                        Logger.i(TAG, "the address of java method was moved by gc, backup it now! origin address: 0x"
+                                + Arrays.toString(currentAddress) + " , currentAddress: 0x" + Arrays.toString(backupAddress));
+                    }
+                    EpicNative.put(currentAddress, address);
+                    return invokeInternal(receiver, args);
                 } else {
                     Logger.i(TAG, "the address is same with last invoke, not moved by gc");
                 }
