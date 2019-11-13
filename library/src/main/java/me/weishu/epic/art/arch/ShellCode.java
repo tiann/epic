@@ -33,7 +33,7 @@ public abstract class ShellCode {
         byte[] callOriginal = new byte[sizeOfCallOrigin()];
         System.arraycopy(originalPrologue, 0, callOriginal, 0, sizeOfDirectJump());
         byte[] directJump = createDirectJump(toPC(originalAddress + sizeOfDirectJump()));
-        System.arraycopy(directJump, 0, callOriginal, sizeOfDirectJump(), sizeOfDirectJump());
+        System.arraycopy(directJump, 0, callOriginal, sizeOfDirectJump(), directJump.length);
         return callOriginal;
     }
 

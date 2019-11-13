@@ -23,7 +23,7 @@ public class Thumb2 extends ShellCode {
 
     @Override
     public int sizeOfDirectJump() {
-        return 8;
+        return 12;
     }
 
     @Override

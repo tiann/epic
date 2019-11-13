@@ -54,6 +54,7 @@ public abstract class AbsArgStaticCase extends TestCase {
     @Override
     public boolean predicate() {
         long[] arguments = getArguments();
+        Log.i(TAG, "call arguments: " + Arrays.toString(toHex(arguments)));
 
         makeCall(arguments);
 
@@ -63,7 +64,6 @@ public abstract class AbsArgStaticCase extends TestCase {
         for (int i = 0; i < length; i++) {
             if (arguments[i] != args[i]) {
                 ret = false;
-                Log.i(TAG, "call arguments: " + Arrays.toString(toHex(arguments)));
                 Log.i(TAG, "hooked arguments: " + Arrays.toString(toHex(args)));
             }
         }

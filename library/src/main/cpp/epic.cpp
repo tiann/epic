@@ -41,6 +41,10 @@ jobject (*addWeakGloablReference)(JavaVM *, void *, void *) = nullptr;
 void* (*jit_load_)(bool*) = nullptr;
 void* jit_compiler_handle_ = nullptr;
 bool (*jit_compile_method_)(void*, void*, void*, bool) = nullptr;
+
+typedef bool (*JIT_COMPILE_METHOD1)(void *, void *, void *, bool);
+typedef bool (*JIT_COMPILE_METHOD2)(void *, void *, void *, bool, bool); // Android Q
+
 void (*jit_unload_)(void*) = nullptr;
 
 class ScopedSuspendAll {};
@@ -86,36 +90,28 @@ void init_entries(JNIEnv *env) {
                                                                                "_ZN3art9JavaVMExt16AddWeakGlobalRefEPNS_6ThreadEPNS_6mirror6ObjectE");
     } else {
         // Android N and O, Google disallow us use dlsym;
-        void *handle;
-        void *jit_lib;
-        if (sizeof(void*) == sizeof(uint64_t)) {
-            LOGV("64 bit mode.");
-            handle = fake_dlopen("/system/lib64/libart.so", RTLD_NOW);
-            jit_lib = fake_dlopen("/system/lib64/libart-compiler.so", RTLD_NOW);
-        } else {
-            handle = fake_dlopen("/system/lib/libart.so", RTLD_NOW);
-            jit_lib = fake_dlopen("/system/lib/libart-compiler.so", RTLD_NOW);
-        }
+        void *handle = dlopen_ex("libart.so", RTLD_NOW);
+        void *jit_lib = dlopen_ex("libart-compiler.so", RTLD_NOW);
         LOGV("fake dlopen install: %p", handle);
         const char *addWeakGloablReferenceSymbol = api_level <= 25
                                                    ? "_ZN3art9JavaVMExt16AddWeakGlobalRefEPNS_6ThreadEPNS_6mirror6ObjectE"
                                                    : "_ZN3art9JavaVMExt16AddWeakGlobalRefEPNS_6ThreadENS_6ObjPtrINS_6mirror6ObjectEEE";
-        addWeakGloablReference = (jobject (*)(JavaVM *, void *, void *)) fake_dlsym(handle, addWeakGloablReferenceSymbol);
+        addWeakGloablReference = (jobject (*)(JavaVM *, void *, void *)) dlsym_ex(handle, addWeakGloablReferenceSymbol);
 
-        jit_compile_method_ = (bool (*)(void *, void *, void *, bool)) fake_dlsym(jit_lib, "jit_compile_method");
-        jit_load_ = reinterpret_cast<void* (*)(bool*)>(fake_dlsym(jit_lib, "jit_load"));
+        jit_compile_method_ = (bool (*)(void *, void *, void *, bool)) dlsym_ex(jit_lib, "jit_compile_method");
+        jit_load_ = reinterpret_cast<void* (*)(bool*)>(dlsym_ex(jit_lib, "jit_load"));
         bool generate_debug_info = false;
         jit_compiler_handle_ = (jit_load_)(&generate_debug_info);
         LOGV("jit compile_method: %p", jit_compile_method_);
 
-        suspendAll = reinterpret_cast<void (*)(ScopedSuspendAll*, char*)>(fake_dlsym(handle, "_ZN3art16ScopedSuspendAllC1EPKcb"));
-        resumeAll = reinterpret_cast<void (*)(ScopedSuspendAll*)>(fake_dlsym(handle, "_ZN3art16ScopedSuspendAllD1Ev"));
+        suspendAll = reinterpret_cast<void (*)(ScopedSuspendAll*, char*)>(dlsym_ex(handle, "_ZN3art16ScopedSuspendAllC1EPKcb"));
+        resumeAll = reinterpret_cast<void (*)(ScopedSuspendAll*)>(dlsym_ex(handle, "_ZN3art16ScopedSuspendAllD1Ev"));
 
         // Disable this now.
-        // startJit = reinterpret_cast<void(*)(ScopedJitSuspend*)>(fake_dlsym(handle, "_ZN3art3jit16ScopedJitSuspendD1Ev"));
-        // stopJit = reinterpret_cast<void(*)(ScopedJitSuspend*)>(fake_dlsym(handle, "_ZN3art3jit16ScopedJitSuspendC1Ev"));
+        // startJit = reinterpret_cast<void(*)(ScopedJitSuspend*)>(dlsym_ex(handle, "_ZN3art3jit16ScopedJitSuspendD1Ev"));
+        // stopJit = reinterpret_cast<void(*)(ScopedJitSuspend*)>(dlsym_ex(handle, "_ZN3art3jit16ScopedJitSuspendC1Ev"));
 
-        // DisableMovingGc = reinterpret_cast<void(*)(void*)>(fake_dlsym(handle, "_ZN3art2gc4Heap15DisableMovingGcEv"));
+        // DisableMovingGc = reinterpret_cast<void(*)(void*)>(dlsym_ex(handle, "_ZN3art2gc4Heap15DisableMovingGcEv"));
     }
 
     LOGV("addWeakGloablReference: %p", addWeakGloablReference);
@@ -124,7 +120,16 @@ void init_entries(JNIEnv *env) {
 jboolean epic_compile(JNIEnv *env, jclass, jobject method, jlong self) {
     LOGV("self from native peer: %p, from register: %p", reinterpret_cast<void*>(self), __self());
     jlong art_method = (jlong) env->FromReflectedMethod(method);
-    bool ret = jit_compile_method_(jit_compiler_handle_, reinterpret_cast<void*>(art_method), reinterpret_cast<void*>(self), false);
+    bool ret;
+    if (api_level >= 29) {
+        ret = ((JIT_COMPILE_METHOD2) jit_compile_method_)(jit_compiler_handle_,
+                                                          reinterpret_cast<void *>(art_method),
+                                                          reinterpret_cast<void *>(self), false, false);
+    } else {
+        ret = ((JIT_COMPILE_METHOD1) jit_compile_method_)(jit_compiler_handle_,
+                                                          reinterpret_cast<void *>(art_method),
+                                                          reinterpret_cast<void *>(self), false);
+    }
     return (jboolean)ret;
 }
 
