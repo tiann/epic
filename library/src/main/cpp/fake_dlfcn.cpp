@@ -178,11 +178,13 @@ static const char *const kSystemLibDir = "/system/lib64/";
 static const char *const kOdmLibDir = "/odm/lib64/";
 static const char *const kVendorLibDir = "/vendor/lib64/";
 static const char *const kApexLibDir = "/apex/com.android.runtime/lib64/";
+static const char *const kApexArtNsLibDir = "/apex/com.android.art/lib64/";
 #else
 static const char *const kSystemLibDir = "/system/lib/";
 static const char *const kOdmLibDir = "/odm/lib/";
 static const char *const kVendorLibDir = "/vendor/lib/";
 static const char *const kApexLibDir = "/apex/com.android.runtime/lib/";
+static const char *const kApexArtNsLibDir = "/apex/com.android.art/lib/";
 #endif
 
 static void *fake_dlopen(const char *filename, int flags) {
@@ -199,9 +201,18 @@ static void *fake_dlopen(const char *filename, int flags) {
             return handle;
         }
 
-        // apex
+        // apex in ns com.android.runtime
         memset(buf, 0, sizeof(buf));
         strcpy(buf, kApexLibDir);
+        strcat(buf, filename);
+        handle = fake_dlopen_with_path(buf, flags);
+        if (handle) {
+            return handle;
+        }
+
+        // apex in ns com.android.art
+        memset(buf, 0, sizeof(buf));
+        strcpy(buf, kApexArtNsLibDir);
         strcat(buf, filename);
         handle = fake_dlopen_with_path(buf, flags);
         if (handle) {
