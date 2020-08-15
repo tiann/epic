@@ -58,6 +58,8 @@ void (*stopJit)(ScopedJitSuspend*) = nullptr;
 
 void (*DisableMovingGc)(void*) = nullptr;
 
+void* (*JniIdManager_DecodeMethodId_)(void*, jlong) = nullptr;
+
 void* __self() {
 
 #ifdef __arm__
@@ -78,6 +80,7 @@ void init_entries(JNIEnv *env) {
     __system_property_get("ro.build.version.sdk", api_level_str);
     api_level = atoi(api_level_str);
     LOGV("api level: %d", api_level);
+    ArtHelper::init(env, api_level);
     if (api_level < 23) {
         // Android L, art::JavaVMExt::AddWeakGlobalReference(art::Thread*, art::mirror::Object*)
         void *handle = dlopen("libart.so", RTLD_LAZY | RTLD_GLOBAL);
@@ -107,6 +110,10 @@ void init_entries(JNIEnv *env) {
         suspendAll = reinterpret_cast<void (*)(ScopedSuspendAll*, char*)>(dlsym_ex(handle, "_ZN3art16ScopedSuspendAllC1EPKcb"));
         resumeAll = reinterpret_cast<void (*)(ScopedSuspendAll*)>(dlsym_ex(handle, "_ZN3art16ScopedSuspendAllD1Ev"));
 
+        if (api_level >= 30) {
+            // Android R would not directly return ArtMethod address but an internal id
+            JniIdManager_DecodeMethodId_ = reinterpret_cast<void* (*)(void*, jlong)>(dlsym_ex(handle, "_ZN3art3jni12JniIdManager14DecodeMethodIdEP10_jmethodID"));
+        }
         // Disable this now.
         // startJit = reinterpret_cast<void(*)(ScopedJitSuspend*)>(dlsym_ex(handle, "_ZN3art3jit16ScopedJitSuspendD1Ev"));
         // stopJit = reinterpret_cast<void(*)(ScopedJitSuspend*)>(dlsym_ex(handle, "_ZN3art3jit16ScopedJitSuspendC1Ev"));
@@ -120,6 +127,9 @@ void init_entries(JNIEnv *env) {
 jboolean epic_compile(JNIEnv *env, jclass, jobject method, jlong self) {
     LOGV("self from native peer: %p, from register: %p", reinterpret_cast<void*>(self), __self());
     jlong art_method = (jlong) env->FromReflectedMethod(method);
+    if (art_method % 2 == 1) {
+        art_method = reinterpret_cast<jlong>(JniIdManager_DecodeMethodId_(ArtHelper::getJniIdManager(), art_method));
+    }
     bool ret;
     if (api_level >= 29) {
         ret = ((JIT_COMPILE_METHOD2) jit_compile_method_)(jit_compiler_handle_,
@@ -156,7 +166,7 @@ void epic_startJit(JNIEnv*, jclass, jlong obj) {
 }
 
 void epic_disableMovingGc(JNIEnv* env, jclass ,jint api) {
-    void *heap = getHeap(env, api);
+    void *heap = ArtHelper::getHeap();
     DisableMovingGc(heap);
 }
 
@@ -262,6 +272,9 @@ jobject epic_getobject(JNIEnv *env, jclass clazz, jlong self, jlong address) {
 
 jlong epic_getMethodAddress(JNIEnv *env, jclass clazz, jobject method) {
     jlong art_method = (jlong) env->FromReflectedMethod(method);
+    if (art_method % 2 == 1) {
+        art_method = reinterpret_cast<jlong>(JniIdManager_DecodeMethodId_(ArtHelper::getJniIdManager(), art_method));
+    }
     return art_method;
 }
 

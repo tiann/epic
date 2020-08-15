@@ -17,11 +17,11 @@
 #ifndef EPIC_ART_H
 #define EPIC_ART_H
 
+#include <jni.h>
+#include <list>
 #include <stdint.h>
 #include <string>
 #include <vector>
-#include <list>
-#include <jni.h>
 
 // Android 6.0: http://androidxref.com/6.0.0_r5/xref/art/runtime/runtime.h
 // Android 7.0: http://androidxref.com/7.0.0_r1/xref/art/runtime/runtime.h
@@ -65,7 +65,6 @@ struct Runtime_7X {
     size_t default_stack_size_;
 
     void* heap_;
-
 };
 
 struct Runtime_8X {
@@ -108,7 +107,40 @@ struct Runtime_8X {
     size_t default_stack_size_;
 
     void* heap_;
+};
 
+struct PartialRuntimeR {
+  void* heap_;
+
+  void* jit_arena_pool_;
+  void* arena_pool_;
+  // Special low 4gb pool for compiler linear alloc. We need ArtFields to be in low 4gb if we are
+  // compiling using a 32 bit image on a 64 bit compiler in case we resolve things in the image
+  // since the field arrays are int arrays in this case.
+  void* low_4gb_arena_pool_;
+
+  // Shared linear alloc for now.
+  void* linear_alloc_;
+
+  // The number of spins that are done before thread suspension is used to forcibly inflate.
+  size_t max_spins_before_thin_lock_inflation_;
+  void* monitor_list_;
+  void* monitor_pool_;
+
+  void* thread_list_;
+
+  void* intern_table_;
+
+  void* class_linker_;
+
+  void* signal_catcher_;
+
+  void* jni_id_manager_;
+
+  void* java_vm_;
+
+  void* jit_;
+  void* jit_code_cache_;
 };
 
 struct JavaVMExt {
@@ -116,6 +148,16 @@ struct JavaVMExt {
     void* runtime;
 };
 
-void *getHeap(JNIEnv*, int);
+class ArtHelper {
+  public:
+    static void init(JNIEnv*, int);
+    static void* getRuntimeInstance() { return runtime_instance_; }
+    static void* getJniIdManager();
+    static void* getHeap();
+
+  private:
+    static void* runtime_instance_;
+    static int api;
+};
 
 #endif //EPIC_ART_H

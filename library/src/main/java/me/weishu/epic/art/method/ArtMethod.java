@@ -78,12 +78,16 @@ public class ArtMethod {
         init();
     }
 
-    private ArtMethod(Method method) {
+    private ArtMethod(Method method, long address) {
         if (method == null) {
             throw new IllegalArgumentException("method can not be null");
         }
         this.method = method;
-        init();
+        if (address != -1) {
+            this.address = address;
+        } else {
+            init();
+        }
     }
 
     private void init() {
@@ -95,7 +99,11 @@ public class ArtMethod {
     }
 
     public static ArtMethod of(Method method) {
-        return new ArtMethod(method);
+        return new ArtMethod(method, -1);
+    }
+
+    public static ArtMethod of(Method method, long address) {
+        return new ArtMethod(method, address);
     }
 
     public static ArtMethod of(Constructor constructor) {
@@ -160,7 +168,12 @@ public class ArtMethod {
                 byte[] data = EpicNative.get(address, artMethodSize);
                 EpicNative.put(data, memoryAddress);
                 artMethodField.set(m, memoryAddress);
-                artMethod = ArtMethod.of(m);
+                // From Android R, getting method address may involve the jni_id_manager which uses
+                // ids mapping instead of directly returning the method address. During resolving the
+                // id->address mapping, it will assume the art method to be from the "methods_" array
+                // in class. However this address may be out of the range of the methods array. Thus
+                // it will cause a crash during using the method offset to resolve method array.
+                artMethod = ArtMethod.of(m, memoryAddress);
             }
             artMethod.makePrivate();
             artMethod.setAccessible(true);
