@@ -121,6 +121,7 @@ class Offset {
             ART_QUICK_CODE_OFFSET.setLength(Offset.BitWidth.QWORD);
             ART_JNI_ENTRY_OFFSET.setLength(BitWidth.QWORD);
             switch (apiLevel) {
+                case Build.VERSION_CODES.R:
                 case Build.VERSION_CODES.Q:
                 case Build.VERSION_CODES.P:
                     ART_QUICK_CODE_OFFSET.setOffset(32);
