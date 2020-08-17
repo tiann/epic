@@ -66,6 +66,15 @@ void* ArtHelper::getJniIdManager()
   return runtimeR->jni_id_manager_;
 }
 
+void* ArtHelper::getJitCodeCache()
+{
+  if (runtime_instance_ == nullptr || api < ANDROID_R_API) {
+    return nullptr;
+  }
+  PartialRuntimeR* runtimeR = (PartialRuntimeR*)runtime_instance_;
+  return runtimeR->jit_code_cache_;
+}
+
 void* ArtHelper::getHeap()
 {
   if (runtime_instance_ == nullptr) {

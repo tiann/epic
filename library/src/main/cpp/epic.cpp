@@ -41,9 +41,11 @@ jobject (*addWeakGloablReference)(JavaVM *, void *, void *) = nullptr;
 void* (*jit_load_)(bool*) = nullptr;
 void* jit_compiler_handle_ = nullptr;
 bool (*jit_compile_method_)(void*, void*, void*, bool) = nullptr;
+void* (*JitCodeCache_GetCurrentRegion)(void*) = nullptr;
 
 typedef bool (*JIT_COMPILE_METHOD1)(void *, void *, void *, bool);
 typedef bool (*JIT_COMPILE_METHOD2)(void *, void *, void *, bool, bool); // Android Q
+typedef bool (*JIT_COMPILE_METHOD3)(void *, void *, void *, void *, bool, bool); // Android R
 
 void (*jit_unload_)(void*) = nullptr;
 
@@ -113,6 +115,8 @@ void init_entries(JNIEnv *env) {
         if (api_level >= 30) {
             // Android R would not directly return ArtMethod address but an internal id
             JniIdManager_DecodeMethodId_ = reinterpret_cast<void* (*)(void*, jlong)>(dlsym_ex(handle, "_ZN3art3jni12JniIdManager14DecodeMethodIdEP10_jmethodID"));
+            jit_compile_method_ = (bool (*)(void *, void *, void *, bool)) dlsym_ex(jit_lib, "_ZN3art3jit11JitCompiler13CompileMethodEPNS_6ThreadEPNS0_15JitMemoryRegionEPNS_9ArtMethodEbb");
+            JitCodeCache_GetCurrentRegion = (void* (*)(void*)) dlsym_ex(handle, "_ZN3art3jit12JitCodeCache16GetCurrentRegionEv");
         }
         // Disable this now.
         // startJit = reinterpret_cast<void(*)(ScopedJitSuspend*)>(dlsym_ex(handle, "_ZN3art3jit16ScopedJitSuspendD1Ev"));
@@ -131,7 +135,12 @@ jboolean epic_compile(JNIEnv *env, jclass, jobject method, jlong self) {
         art_method = reinterpret_cast<jlong>(JniIdManager_DecodeMethodId_(ArtHelper::getJniIdManager(), art_method));
     }
     bool ret;
-    if (api_level >= 29) {
+    if (api_level >= 30) {
+      void* current_region = JitCodeCache_GetCurrentRegion(ArtHelper::getJitCodeCache());
+      ret = ((JIT_COMPILE_METHOD3)jit_compile_method_)(jit_compiler_handle_, reinterpret_cast<void*>(self),
+          reinterpret_cast<void*>(current_region),
+          reinterpret_cast<void*>(art_method), false, false);
+    } else if (api_level >= 29) {
         ret = ((JIT_COMPILE_METHOD2) jit_compile_method_)(jit_compiler_handle_,
                                                           reinterpret_cast<void *>(art_method),
                                                           reinterpret_cast<void *>(self), false, false);
