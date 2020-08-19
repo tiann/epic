@@ -57,6 +57,15 @@ void ArtHelper::init(JNIEnv* env, int api)
   }
 }
 
+void* ArtHelper::getClassLinker()
+{
+  if (runtime_instance_ == nullptr || api < ANDROID_R_API) {
+    return nullptr;
+  }
+  PartialRuntimeR* runtimeR = (PartialRuntimeR*)runtime_instance_;
+  return runtimeR->class_linker_;
+}
+
 void* ArtHelper::getJniIdManager()
 {
   if (runtime_instance_ == nullptr || api < ANDROID_R_API) {

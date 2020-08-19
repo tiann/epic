@@ -58,6 +58,8 @@ public final class EpicNative {
 
     public static native long getMethodAddress(Member method);
 
+    public static native void MakeInitializedClassVisibilyInitialized(long self);
+
     public static native boolean cacheflush(long addr, long len);
 
     public static native long malloc(int sizeOfPtr);
@@ -125,6 +127,11 @@ public final class EpicNative {
     public static Object getObject(long address) {
         final long nativePeer = XposedHelpers.getLongField(Thread.currentThread(), "nativePeer");
         return getObject(nativePeer, address);
+    }
+
+    public static void MakeInitializedClassVisibilyInitialized() {
+        final long nativePeer = XposedHelpers.getLongField(Thread.currentThread(), "nativePeer");
+        MakeInitializedClassVisibilyInitialized(nativePeer);
     }
 
     public static long map(int length) {

@@ -61,6 +61,7 @@ void (*stopJit)(ScopedJitSuspend*) = nullptr;
 void (*DisableMovingGc)(void*) = nullptr;
 
 void* (*JniIdManager_DecodeMethodId_)(void*, jlong) = nullptr;
+void* (*ClassLinker_MakeInitializedClassesVisiblyInitialized_)(void*, void*, bool) = nullptr;
 
 void* __self() {
 
@@ -114,6 +115,7 @@ void init_entries(JNIEnv *env) {
 
         if (api_level >= 30) {
             // Android R would not directly return ArtMethod address but an internal id
+            ClassLinker_MakeInitializedClassesVisiblyInitialized_ = reinterpret_cast<void* (*)(void*, void*, bool)>(dlsym_ex(handle, "_ZN3art11ClassLinker40MakeInitializedClassesVisiblyInitializedEPNS_6ThreadEb"));
             JniIdManager_DecodeMethodId_ = reinterpret_cast<void* (*)(void*, jlong)>(dlsym_ex(handle, "_ZN3art3jni12JniIdManager14DecodeMethodIdEP10_jmethodID"));
             jit_compile_method_ = (bool (*)(void *, void *, void *, bool)) dlsym_ex(jit_lib, "_ZN3art3jit11JitCompiler13CompileMethodEPNS_6ThreadEPNS0_15JitMemoryRegionEPNS_9ArtMethodEbb");
             JitCodeCache_GetCurrentRegion = (void* (*)(void*)) dlsym_ex(handle, "_ZN3art3jit12JitCodeCache16GetCurrentRegionEv");
@@ -207,6 +209,12 @@ jboolean epic_cacheflush(JNIEnv *env, jclass, jlong addr, jlong len) {
     LOGV("aarch64 __builtin___clear_cache, %p", (void*)begin);
 #endif
     return JNI_TRUE;
+}
+
+void epic_MakeInitializedClassVisibilyInitialized(JNIEnv *env, jclass, jlong self) {
+  if (api_level >= 29) {
+    ClassLinker_MakeInitializedClassesVisiblyInitialized_(ArtHelper::getClassLinker(), reinterpret_cast<void*>(self), true);
+  }
 }
 
 void epic_memcpy(JNIEnv *env, jclass, jlong src, jlong dest, jint length) {
@@ -349,6 +357,7 @@ static JNINativeMethod dexposedMethods[] = {
         {"munprotect",        "(JJ)Z",                         (void *) epic_munprotect},
         {"getMethodAddress",  "(Ljava/lang/reflect/Member;)J", (void *) epic_getMethodAddress},
         {"cacheflush",        "(JJ)Z",                         (void *) epic_cacheflush},
+        {"MakeInitializedClassVisibilyInitialized", "(J)V",    (void *) epic_MakeInitializedClassVisibilyInitialized},
         {"malloc",            "(I)J",                          (void *) epic_malloc},
         {"getObjectNative",   "(JJ)Ljava/lang/Object;",        (void *) epic_getobject},
         {"compileMethod",     "(Ljava/lang/reflect/Member;J)Z",(void *) epic_compile},
