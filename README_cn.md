@@ -14,13 +14,12 @@ Epic 被 [VirtualXposed](https://github.com/android-hacker/VirtualXposed) 以及
 
 ```groovy
 dependencies {
-    compile 'me.weishu:epic:0.6.0'
+    compile 'me.weishu:epic:0.8.0-c'
 }
 ```
 
 然后就可以使用了。
 
-> 当前为开源版本，如果你对稳定性有要求（更好地兼容 Android 8.0, 9.0, 10.0 上的支持等），请联系我 (twsxtd@gmail.com)。在 0.17.0 版本之后，其稳定性已经非常卓越，当前版本经千万级用户验证闪退率 0.04%。
 
 ### 几个例子
 
