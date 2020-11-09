@@ -185,7 +185,7 @@ public class Entry64 {
         } else {
 
             receiver = EpicNative.getObject(self, x1);
-            Logger.i(TAG, "this :" + receiver);
+            //Logger.i(TAG, "this :" + receiver);
 
             do {
                 if (numberOfArgs == 0) break;
