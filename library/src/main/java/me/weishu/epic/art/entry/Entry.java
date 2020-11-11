@@ -146,8 +146,16 @@ public class Entry {
         Logger.d(TAG, "r2:" + Debug.hexdump(r2, 0));
         Logger.d(TAG, "r3:" + Debug.hexdump(r3, 0));
 
-        final int sourceMethod = ByteBuffer.wrap(EpicNative.get(struct + 12, 4)).order(ByteOrder.LITTLE_ENDIAN).getInt();
-        Logger.i(TAG, "sourceMethod:" + Integer.toHexString(sourceMethod));
+        final byte[] sourceAddr = EpicNative.get(struct + 12, 4);
+
+        ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[8]);
+        byteBuffer.put(sourceAddr);
+        byteBuffer.put(new byte[] {0, 0, 0, 0});
+        byteBuffer.flip();
+
+        final long sourceMethod = byteBuffer.order(ByteOrder.LITTLE_ENDIAN).getLong();
+        
+        Logger.i(TAG, "sourceMethod:" + Long.toHexString(sourceMethod));
 
         Epic.MethodInfo originMethodInfo = Epic.getMethodInfo(sourceMethod);
         Logger.i(TAG, "originMethodInfo :" + originMethodInfo);
