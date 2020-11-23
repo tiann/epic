@@ -391,6 +391,8 @@ public class ArtMethod {
             Logger.d(TAG, "ensure resolved");
         } catch (Exception ignored) {
             // we should never make a successful call.
+        } finally {
+            EpicNative.MakeInitializedClassVisibilyInitialized();
         }
     }
 

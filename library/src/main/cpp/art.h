@@ -152,7 +152,9 @@ class ArtHelper {
   public:
     static void init(JNIEnv*, int);
     static void* getRuntimeInstance() { return runtime_instance_; }
+    static void* getClassLinker();
     static void* getJniIdManager();
+    static void* getJitCodeCache();
     static void* getHeap();
 
   private:

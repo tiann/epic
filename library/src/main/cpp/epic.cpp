@@ -41,9 +41,11 @@ jobject (*addWeakGloablReference)(JavaVM *, void *, void *) = nullptr;
 void* (*jit_load_)(bool*) = nullptr;
 void* jit_compiler_handle_ = nullptr;
 bool (*jit_compile_method_)(void*, void*, void*, bool) = nullptr;
+void* (*JitCodeCache_GetCurrentRegion)(void*) = nullptr;
 
 typedef bool (*JIT_COMPILE_METHOD1)(void *, void *, void *, bool);
 typedef bool (*JIT_COMPILE_METHOD2)(void *, void *, void *, bool, bool); // Android Q
+typedef bool (*JIT_COMPILE_METHOD3)(void *, void *, void *, void *, bool, bool); // Android R
 
 void (*jit_unload_)(void*) = nullptr;
 
@@ -59,6 +61,7 @@ void (*stopJit)(ScopedJitSuspend*) = nullptr;
 void (*DisableMovingGc)(void*) = nullptr;
 
 void* (*JniIdManager_DecodeMethodId_)(void*, jlong) = nullptr;
+void* (*ClassLinker_MakeInitializedClassesVisiblyInitialized_)(void*, void*, bool) = nullptr;
 
 void* __self() {
 
@@ -112,7 +115,10 @@ void init_entries(JNIEnv *env) {
 
         if (api_level >= 30) {
             // Android R would not directly return ArtMethod address but an internal id
+            ClassLinker_MakeInitializedClassesVisiblyInitialized_ = reinterpret_cast<void* (*)(void*, void*, bool)>(dlsym_ex(handle, "_ZN3art11ClassLinker40MakeInitializedClassesVisiblyInitializedEPNS_6ThreadEb"));
             JniIdManager_DecodeMethodId_ = reinterpret_cast<void* (*)(void*, jlong)>(dlsym_ex(handle, "_ZN3art3jni12JniIdManager14DecodeMethodIdEP10_jmethodID"));
+            jit_compile_method_ = (bool (*)(void *, void *, void *, bool)) dlsym_ex(jit_lib, "_ZN3art3jit11JitCompiler13CompileMethodEPNS_6ThreadEPNS0_15JitMemoryRegionEPNS_9ArtMethodEbb");
+            JitCodeCache_GetCurrentRegion = (void* (*)(void*)) dlsym_ex(handle, "_ZN3art3jit12JitCodeCache16GetCurrentRegionEv");
         }
         // Disable this now.
         // startJit = reinterpret_cast<void(*)(ScopedJitSuspend*)>(dlsym_ex(handle, "_ZN3art3jit16ScopedJitSuspendD1Ev"));
@@ -131,7 +137,12 @@ jboolean epic_compile(JNIEnv *env, jclass, jobject method, jlong self) {
         art_method = reinterpret_cast<jlong>(JniIdManager_DecodeMethodId_(ArtHelper::getJniIdManager(), art_method));
     }
     bool ret;
-    if (api_level >= 29) {
+    if (api_level >= 30) {
+      void* current_region = JitCodeCache_GetCurrentRegion(ArtHelper::getJitCodeCache());
+      ret = ((JIT_COMPILE_METHOD3)jit_compile_method_)(jit_compiler_handle_, reinterpret_cast<void*>(self),
+          reinterpret_cast<void*>(current_region),
+          reinterpret_cast<void*>(art_method), false, false);
+    } else if (api_level >= 29) {
         ret = ((JIT_COMPILE_METHOD2) jit_compile_method_)(jit_compiler_handle_,
                                                           reinterpret_cast<void *>(art_method),
                                                           reinterpret_cast<void *>(self), false, false);
@@ -198,6 +209,12 @@ jboolean epic_cacheflush(JNIEnv *env, jclass, jlong addr, jlong len) {
     LOGV("aarch64 __builtin___clear_cache, %p", (void*)begin);
 #endif
     return JNI_TRUE;
+}
+
+void epic_MakeInitializedClassVisibilyInitialized(JNIEnv *env, jclass, jlong self) {
+  if (api_level >= 29) {
+    ClassLinker_MakeInitializedClassesVisiblyInitialized_(ArtHelper::getClassLinker(), reinterpret_cast<void*>(self), true);
+  }
 }
 
 void epic_memcpy(JNIEnv *env, jclass, jlong src, jlong dest, jint length) {
@@ -340,6 +357,7 @@ static JNINativeMethod dexposedMethods[] = {
         {"munprotect",        "(JJ)Z",                         (void *) epic_munprotect},
         {"getMethodAddress",  "(Ljava/lang/reflect/Member;)J", (void *) epic_getMethodAddress},
         {"cacheflush",        "(JJ)Z",                         (void *) epic_cacheflush},
+        {"MakeInitializedClassVisibilyInitialized", "(J)V",    (void *) epic_MakeInitializedClassVisibilyInitialized},
         {"malloc",            "(I)J",                          (void *) epic_malloc},
         {"getObjectNative",   "(JJ)Ljava/lang/Object;",        (void *) epic_getobject},
         {"compileMethod",     "(Ljava/lang/reflect/Member;J)Z",(void *) epic_compile},
