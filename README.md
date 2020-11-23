@@ -32,9 +32,7 @@ Typical use-cases
 Integration
 -----------
 
-Directly add epic aar to your project as compile libraries, it contains a jar file "dexposedbridge.jar" two so files "libdexposed.so libepic.so" from 'epic' directory.
-
-Gradle dependency like following(jcenter):
+Directly add epic aar to your project as compile libraries, Gradle dependency like following(jcenter):
 
 ```groovy
 dependencies {
@@ -43,8 +41,6 @@ dependencies {
 ```
 
 Everything is ready.
-
-> If you want for the stable version (better compatibility for Android 8.0+ and support for Android 9.0), please contact me.
 
 Basic usage
 -----------
@@ -105,36 +101,8 @@ Checkout the `sample` project to find out more.
 Support
 ----------
 
-Epic support all Dalvik runtime arm architecture devices from Android 2.3 to 4.4 (no include 3.0), which inherits from Dexposed. Further more, it support ART thumb2 and arm64 architecture from Android 5.0 to 8.1. arm32, x86, x86_64 and mips are not supported now. The stability is not proved in any online product, it is only for personal use now (mainly for performance analysis), Welcome to any compatibility issues or PRs.
+Epic supports ART thumb2 and arm64 architecture from Android 5.0 ~ 11. arm32, x86, x86_64 and mips are not supported now (Thus it cannot work on android emulator).
 
-Following is support status.
-
-Runtime | Android Version | Support
-------  | --------------- | --------
-Dalvik  | 2.2             | Not Test
-Dalvik  | 2.3             | Yes
-Dalvik  | 3.0             | No
-Dalvik  | 4.0-4.4         | Yes
-ART     | L (5.0)         | Yes
-ART     | L MR1 (5.1)     | Yes
-ART     | M (6.0)         | Yes
-ART     | N (7.0)         | Yes
-ART     | N MR1 (7.1)     | Yes
-ART     | O (8.0)         | Yes
-ART     | O MR1(8.1)      | Yes
-ART     | P (9.0)         | Yes
-ART     | Q (10.0)        | Yes
-
-And the architecture support status:
-
-Runtime  | Arch         | Support
--------- | ------------ | --------
-Dalvik   | All          | Yes
-ART      | Thumb2       | Yes
-ART      | ARM64        | Yes
-ART      | ARM32        | No
-ART      | x86/x86_64   | No
-ART      | mips         | No
 
 Known Issues
 -------------
