@@ -6,7 +6,7 @@
 What is it?
 -----------
 
-Epic is the continuation of [Dexposed](https://github.com/alibaba/dexposed) on ART (Supports 4.0 ~ 10.0).
+Epic is the continuation of [Dexposed](https://github.com/alibaba/dexposed) on ART (Supports 5.0 ~ 11).
 
 > Dexposed is a powerful yet non-invasive runtime [AOP (Aspect-oriented Programming)](http://en.wikipedia.org/wiki/Aspect-oriented_programming) framework
 for Android app development, based on the work of open-source [Xposed](https://github.com/rovo89/Xposed) [framework](https://github.com/rovo89/XposedBridge) project.
@@ -36,7 +36,7 @@ Directly add epic aar to your project as compile libraries, Gradle dependency li
 
 ```groovy
 dependencies {
-    compile 'me.weishu:epic:0.6.0'
+    compile 'me.weishu:epic:0.11.0'
 }
 ```
 

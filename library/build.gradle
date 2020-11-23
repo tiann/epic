@@ -52,7 +52,7 @@ publish {
     userOrg = 'twsxtd'//
     groupId = 'me.weishu'
     artifactId = 'epic'
-    publishVersion = '0.8.1-c'
+    publishVersion = '0.11.0'
     desc = 'Android Java AOP Method Hook (Dexposed on ART)'
     website = 'https://github.com/tiann/epic'
 }

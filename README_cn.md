@@ -1,6 +1,6 @@
 ## 简介
 
-Epic 是一个在虚拟机层面、以 Java Method 为粒度的 **运行时** AOP Hook 框架。简单来说，Epic 就是 ART 上的 [Dexposed](https://github.com/alibaba/dexposed)（支持 Android 4.0 ~ 10.0）。它可以拦截本进程内部几乎任意的 Java 方法调用，可用于实现 AOP 编程、运行时插桩、性能分析、安全审计等。
+Epic 是一个在虚拟机层面、以 Java Method 为粒度的 **运行时** AOP Hook 框架。简单来说，Epic 就是 ART 上的 [Dexposed](https://github.com/alibaba/dexposed)（支持 Android 5.0 ~ 11）。它可以拦截本进程内部几乎任意的 Java 方法调用，可用于实现 AOP 编程、运行时插桩、性能分析、安全审计等。
 
 Epic 被 [VirtualXposed](https://github.com/android-hacker/VirtualXposed) 以及 [太极](https://www.coolapk.com/apk/me.weishu.exp) 使用，用来实现非 Root 场景下的 Xposed 功能，已经经过了相当广泛的验证。
 
@@ -14,7 +14,7 @@ Epic 被 [VirtualXposed](https://github.com/android-hacker/VirtualXposed) 以及
 
 ```groovy
 dependencies {
-    compile 'me.weishu:epic:0.8.0-c'
+    compile 'me.weishu:epic:0.11.0'
 }
 ```
 
@@ -78,36 +78,8 @@ DexposedBridge.findAndHookMethod(DexFile.class, "loadDex", String.class, String.
 
 ## 支持情况
 
-目前 Epic 支持 Android 4.0 ~ 10.0 的 Thumb-2/ARM64 指令集。本项目被 [VirtualXposed](https://github.com/android-hacker/VirtualXposed) 和 [太极](http://taichi.cool) 以及大量企业级用户使用，经过了数千万用户的验证，已经被证明非常稳定。目前，手机 QQ 已经在产品中使用 Epic。
+目前 Epic 支持 Android 5.0 ~ 11 的 Thumb-2/ARM64 指令集，arm32/x86/x86_64/mips/mips64 不支持。本项目被 [VirtualXposed](https://github.com/android-hacker/VirtualXposed) 和 [太极](http://taichi.cool) 以及大量企业级用户使用，经过了数千万用户的验证，已经被证明非常稳定。目前，手机 QQ 已经在产品中使用 Epic。
 
-Android 版本支持情况：
-
-Runtime | Android Version | Support
-------  | --------------- | --------
-Dalvik  | 2.2             | Not Test
-Dalvik  | 2.3             | Yes
-Dalvik  | 3.0             | No
-Dalvik  | 4.0-4.4         | Yes
-ART     | L (5.0)         | Yes
-ART     | L MR1 (5.1)     | Yes
-ART     | M (6.0)         | Yes
-ART     | N (7.0)         | Yes
-ART     | N MR1 (7.1)     | Yes
-ART     | O (8.0)         | Yes
-ART     | O MR1(8.1)      | Yes
-ART     | P (9.0)         | Yes
-ART     | Q (10.0 beta)   | Yes
-
-指令集支持情况：
-
-Runtime  | Arch         | Support
--------- | ------------ | --------
-Dalvik   | All          | Yes
-ART      | Thumb-2       | Yes
-ART      | ARM64        | Yes
-ART      | ARM32        | Yes
-ART      | x86/x86_64   | No
-ART      | mips         | No
 
 ## 已知问题
 
