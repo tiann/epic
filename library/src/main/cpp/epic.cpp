@@ -212,7 +212,7 @@ jboolean epic_cacheflush(JNIEnv *env, jclass, jlong addr, jlong len) {
 }
 
 void epic_MakeInitializedClassVisibilyInitialized(JNIEnv *env, jclass, jlong self) {
-  if (api_level >= 29) {
+  if (api_level >= 30 && ClassLinker_MakeInitializedClassesVisiblyInitialized_ && ArtHelper::getClassLinker()) {
     ClassLinker_MakeInitializedClassesVisiblyInitialized_(ArtHelper::getClassLinker(), reinterpret_cast<void*>(self), true);
   }
 }
