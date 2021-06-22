@@ -146,7 +146,7 @@ class Offset {
                     ART_ACCESS_FLAG_OFFSET.setOffset(12);
                     break;
                 case Build.VERSION_CODES.LOLLIPOP_MR1:
-                    ART_QUICK_CODE_OFFSET.setOffset(52);
+                    ART_QUICK_CODE_OFFSET.setOffset(56);
                     ART_JNI_ENTRY_OFFSET.setOffset(44);
                     ART_ACCESS_FLAG_OFFSET.setOffset(20);
                     break;
