@@ -32,11 +32,11 @@ Typical use-cases
 Integration
 -----------
 
-Directly add epic aar to your project as compile libraries, Gradle dependency like following(jcenter):
+Directly add epic aar to your project as compile libraries, Gradle dependency like following(jitpack):
 
 ```groovy
 dependencies {
-    compile 'me.weishu:epic:0.11.0'
+    compile 'com.github.tiann:epic:0.11.1'
 }
 ```
 

@@ -10,11 +10,11 @@ Epic 被 [VirtualXposed](https://github.com/android-hacker/VirtualXposed) 以及
 
 ### 添加依赖
 
-在你项目的 build.gradle 中添加如下依赖（jcenter 仓库):
+在你项目的 build.gradle 中添加如下依赖（jitpack 仓库):
 
 ```groovy
 dependencies {
-    compile 'me.weishu:epic:0.11.0'
+    compile 'com.github.tiann:epic:0.11.1'
 }
 ```
 
