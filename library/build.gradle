@@ -42,7 +42,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "me.weishu:free_reflection:3.1.0"
+    implementation "com.github.tiann:FreeReflection:3.1.0"
     api 'me.weishu.exposed:exposed-xposedapi:0.4.5'
 }
 
