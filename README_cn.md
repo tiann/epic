@@ -14,7 +14,7 @@ Epic 被 [VirtualXposed](https://github.com/android-hacker/VirtualXposed) 以及
 
 ```groovy
 dependencies {
-    compile 'com.github.tiann:epic:0.11.1'
+    compile 'com.github.tiann:epic:0.11.2'
 }
 ```
 

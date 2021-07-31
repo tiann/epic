@@ -36,7 +36,7 @@ Directly add epic aar to your project as compile libraries, Gradle dependency li
 
 ```groovy
 dependencies {
-    compile 'com.github.tiann:epic:0.11.1'
+    compile 'com.github.tiann:epic:0.11.2'
 }
 ```
 
