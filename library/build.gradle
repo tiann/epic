@@ -2,11 +2,10 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion '28.0.3'
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
@@ -20,7 +19,7 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++11"
-                arguments "-DANDROID_TOOLCHAIN=gcc"
+                // arguments "-DANDROID_TOOLCHAIN=gcc"
             }
         }
     }
@@ -46,7 +45,7 @@ dependencies {
     api 'me.weishu.exposed:exposed-xposedapi:0.4.5'
 }
 
-apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'com.github.panpf.bintray-publish'
 
 publish {
     userOrg = 'twsxtd'//

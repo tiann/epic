@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "me.weishu.epic.samples"
         minSdkVersion 21
