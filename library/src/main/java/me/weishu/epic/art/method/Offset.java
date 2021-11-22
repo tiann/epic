@@ -174,6 +174,12 @@ class Offset {
             ART_QUICK_CODE_OFFSET.setLength(Offset.BitWidth.DWORD);
             ART_JNI_ENTRY_OFFSET.setLength(BitWidth.DWORD);
             switch (apiLevel) {
+                case Build.VERSION_CODES.S:
+                    ART_QUICK_CODE_OFFSET.setOffset(20);
+                    ART_JNI_ENTRY_OFFSET.setOffset(16);
+                    ART_ACCESS_FLAG_OFFSET.setOffset(4);
+                    break;
+                case Build.VERSION_CODES.R:
                 case Build.VERSION_CODES.Q:
                 case Build.VERSION_CODES.P:
                     ART_QUICK_CODE_OFFSET.setOffset(24);
