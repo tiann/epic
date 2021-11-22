@@ -46,6 +46,7 @@ void* (*JitCodeCache_GetCurrentRegion)(void*) = nullptr;
 typedef bool (*JIT_COMPILE_METHOD1)(void *, void *, void *, bool);
 typedef bool (*JIT_COMPILE_METHOD2)(void *, void *, void *, bool, bool); // Android Q
 typedef bool (*JIT_COMPILE_METHOD3)(void *, void *, void *, void *, bool, bool); // Android R
+typedef bool (*JIT_COMPILE_METHOD4)(void *, void *, void *, void *, int); // Android S
 
 void (*jit_unload_)(void*) = nullptr;
 
@@ -117,7 +118,13 @@ void init_entries(JNIEnv *env) {
             // Android R would not directly return ArtMethod address but an internal id
             ClassLinker_MakeInitializedClassesVisiblyInitialized_ = reinterpret_cast<void* (*)(void*, void*, bool)>(dlsym_ex(handle, "_ZN3art11ClassLinker40MakeInitializedClassesVisiblyInitializedEPNS_6ThreadEb"));
             JniIdManager_DecodeMethodId_ = reinterpret_cast<void* (*)(void*, jlong)>(dlsym_ex(handle, "_ZN3art3jni12JniIdManager14DecodeMethodIdEP10_jmethodID"));
-            jit_compile_method_ = (bool (*)(void *, void *, void *, bool)) dlsym_ex(jit_lib, "_ZN3art3jit11JitCompiler13CompileMethodEPNS_6ThreadEPNS0_15JitMemoryRegionEPNS_9ArtMethodEbb");
+            if (api_level >= 31) {
+                // Android S CompileMethod accepts a CompilationKind enum instead of two booleans
+                // source: https://android.googlesource.com/platform/art/+/refs/heads/android12-release/compiler/jit/jit_compiler.cc
+                jit_compile_method_ = (bool (*)(void *, void *, void *, bool)) dlsym_ex(jit_lib, "_ZN3art3jit11JitCompiler13CompileMethodEPNS_6ThreadEPNS0_15JitMemoryRegionEPNS_9ArtMethodENS_15CompilationKindE");
+            } else {
+                jit_compile_method_ = (bool (*)(void *, void *, void *, bool)) dlsym_ex(jit_lib, "_ZN3art3jit11JitCompiler13CompileMethodEPNS_6ThreadEPNS0_15JitMemoryRegionEPNS_9ArtMethodEbb");
+            }
             JitCodeCache_GetCurrentRegion = (void* (*)(void*)) dlsym_ex(handle, "_ZN3art3jit12JitCodeCache16GetCurrentRegionEv");
         }
         // Disable this now.
@@ -138,10 +145,16 @@ jboolean epic_compile(JNIEnv *env, jclass, jobject method, jlong self) {
     }
     bool ret;
     if (api_level >= 30) {
-      void* current_region = JitCodeCache_GetCurrentRegion(ArtHelper::getJitCodeCache());
-      ret = ((JIT_COMPILE_METHOD3)jit_compile_method_)(jit_compiler_handle_, reinterpret_cast<void*>(self),
-          reinterpret_cast<void*>(current_region),
-          reinterpret_cast<void*>(art_method), false, false);
+        void* current_region = JitCodeCache_GetCurrentRegion(ArtHelper::getJitCodeCache());
+        if (api_level >= 31) {
+            ret = ((JIT_COMPILE_METHOD4)jit_compile_method_)(jit_compiler_handle_, reinterpret_cast<void*>(self),
+                                                             reinterpret_cast<void*>(current_region),
+                                                             reinterpret_cast<void*>(art_method), 1);
+        } else {
+            ret = ((JIT_COMPILE_METHOD3)jit_compile_method_)(jit_compiler_handle_, reinterpret_cast<void*>(self),
+                                                             reinterpret_cast<void*>(current_region),
+                                                             reinterpret_cast<void*>(art_method), false, false);
+        }
     } else if (api_level >= 29) {
         ret = ((JIT_COMPILE_METHOD2) jit_compile_method_)(jit_compiler_handle_,
                                                           reinterpret_cast<void *>(art_method),
