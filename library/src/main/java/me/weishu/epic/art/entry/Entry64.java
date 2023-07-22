@@ -144,6 +144,8 @@ public class Entry64 {
         final long sourceMethod = ByteBuffer.wrap(EpicNative.get(struct + 24, 8)).order(ByteOrder.LITTLE_ENDIAN).getLong();
         Logger.d(TAG, "sourceMethod:" + Long.toHexString(sourceMethod));
 
+        EpicNative.free(struct);//add by gzh
+
         Epic.MethodInfo originMethodInfo = Epic.getMethodInfo(sourceMethod);
         Logger.d(TAG, "originMethodInfo :" + originMethodInfo);
 
