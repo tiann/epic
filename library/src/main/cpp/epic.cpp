@@ -290,6 +290,25 @@ jlong epic_malloc(JNIEnv *env, jclass, jint size) {
     return (jlong) ptr;
 }
 
+//add by gzh
+jlong malloc_internal(int size) {
+    size_t length = sizeof(void *) * size;
+    void *ptr = malloc(length);
+    LOGV("malloc :%d of memory at: %p", (int) length, ptr);
+    return (jlong) ptr;
+}
+
+jlong epic_malloc_address(JNIEnv *env, jclass) {
+    LOGV("epic_malloc_address %p",malloc_internal);
+    return jlong(malloc_internal);
+}
+
+void epic_free(JNIEnv *env, jclass, jlong addr) {
+    LOGV("epic_free :%p",(void *)addr);
+    free((void*)addr);
+}
+
+//add by gzh end
 
 jobject epic_getobject(JNIEnv *env, jclass clazz, jlong self, jlong address) {
     JavaVM *vm;
@@ -382,7 +401,9 @@ static JNINativeMethod dexposedMethods[] = {
         {"startJit",          "(J)V",                          (void *) epic_startJit},
         {"disableMovingGc",   "(I)V",                          (void *) epic_disableMovingGc},
         {"activateNative",    "(JJJJ[B)Z",                     (void *) epic_activate},
-        {"isGetObjectAvailable", "()Z",                        (void *) epic_isGetObjectAvaliable}
+        {"isGetObjectAvailable", "()Z",                        (void *) epic_isGetObjectAvaliable},
+        {"mallocAdress",         "()J",                        (void*) epic_malloc_address},//add by gzh
+        {"free",                "(J)V",                        (void*) epic_free}//add by gzh
 };
 
 static int registerNativeMethods(JNIEnv *env, const char *className,

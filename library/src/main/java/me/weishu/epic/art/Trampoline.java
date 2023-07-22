@@ -156,8 +156,10 @@ class Trampoline {
         long targetAddress = target.getAddress();
         long targetEntry = target.getEntryPointFromQuickCompiledCode();
         long sourceAddress = source.getAddress();
-        long structAddress = EpicNative.malloc(4);
-
+        //add by gzh
+//        long structAddress = EpicNative.malloc(4);//这里有个bug，由于这个地址是固定的，因此当多个线程并发的调用某一个被hook的方法时，就会造成方法参数被覆盖的问题
+        long structAddress = EpicNative.mallocAdress();//这里传入一个函数指针，而不是结构体地址
+        //add by gzh end
         Logger.d(TAG, "targetAddress:"+ Debug.longHex(targetAddress));
         Logger.d(TAG, "sourceAddress:"+ Debug.longHex(sourceAddress));
         Logger.d(TAG, "targetEntry:"+ Debug.longHex(targetEntry));

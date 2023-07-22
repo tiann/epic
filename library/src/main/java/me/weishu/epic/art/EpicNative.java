@@ -64,6 +64,12 @@ public final class EpicNative {
 
     public static native long malloc(int sizeOfPtr);
 
+    //add by gzh
+    public static native long mallocAdress();
+
+    public static native void free(long address);
+    //add by gzh end
+
     public static native Object getObjectNative(long self, long address);
 
     private static native boolean isGetObjectAvailable();

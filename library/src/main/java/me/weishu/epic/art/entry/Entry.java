@@ -148,6 +148,10 @@ public class Entry {
 
         final byte[] sourceAddr = EpicNative.get(struct + 12, 4);
 
+        //add by gzh
+        EpicNative.free(struct);//在汇编中申请的，使用完释放
+        //add by gzh end
+
         ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[8]);
         byteBuffer.put(sourceAddr);
         byteBuffer.put(new byte[] {0, 0, 0, 0});

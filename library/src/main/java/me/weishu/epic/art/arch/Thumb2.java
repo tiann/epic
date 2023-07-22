@@ -64,7 +64,8 @@ public class Thumb2 extends ShellCode {
 //                ByteOrder.LITTLE_ENDIAN, instructions, instructions.length - 8);
 //        writeInt((int) srcAddress, ByteOrder.LITTLE_ENDIAN, instructions,
 //                instructions.length - 4);
-
+//add by gzh
+        /*
         byte[] instructions = new byte[]{
 
                 (byte) 0xdf, (byte) 0xf8, (byte) 0x30, (byte) 0xc0, // ldr ip, [pc, #48] ip = source method address
@@ -91,7 +92,60 @@ public class Thumb2 extends ShellCode {
                 0x0, 0x0, 0x0, 0x0,                             // struct address (sp, r1, r2)
                 // 1:
         };
-
+        */
+//add by gzh
+        /*
+        ldr ip, src_method_address //ip = source method address
+        cmp r0, ip        //if r0 != ip
+        bne.w 1f          //jump label 1:
+        //ldr r0, target_method_pos_x //r0 = target_method_address
+        push {r0-r4,lr}  //save r0-r4,lr
+        mov r0, #4
+        ldr r4, struct_address //call malloc
+        blx r4
+        mov ip, r0
+        pop {r0-r4,lr} //restore r0-r4,lr
+        ldr r0, target_method_pos_x
+        //ldr ip, struct_address //ip = struct address
+        str sp, [ip, #0]
+        str r2, [ip, #4]
+        str r3, [ip, #8]
+        mov r3, ip
+        ldr r2, src_method_address //r2 = source_method_address
+        str r2, [ip, #12]
+        mov r2, r9
+        mov r2, r9
+        ldr pc, [pc, #4]
+        target_method_pos_x:
+        .long 0
+        target_method_address:
+        .long 0
+        src_method_address:
+        .long 0
+        struct_address:
+        .long 0
+        1:
+        * */
+        byte[] instructions = new byte[]{
+                (byte)0xdf, (byte)0xf8, 0x3c, (byte)0xc0,
+                0x60, 0x45, 0x40, (byte)0xf0,
+                0x1f, (byte)0x80, 0x1f, (byte)0xb5,
+                0x4f, (byte)0xf0, 0x04, 0x00,
+                0x0c, 0x4c, (byte)0xa0, 0x47,
+                (byte)0x84, 0x46, (byte)0xbd, (byte)0xe8,
+                0x1f, 0x40, 0x07, 0x48,
+                (byte)0xcc, (byte)0xf8, 0x00, (byte)0xd0,
+                (byte)0xcc, (byte)0xf8, 0x04, 0x20,
+                (byte)0xcc, (byte)0xf8, 0x08, 0x30,
+                0x63, 0x46, 0x05, 0x4a,
+                (byte)0xcc, (byte)0xf8, 0x0c, 0x20,
+                0x4a, 0x46, 0x4a, 0x46,
+                (byte)0xdf, (byte)0xf8, 0x04, (byte)0xf0,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00
+        };
         writeInt((int) targetAddress, ByteOrder.LITTLE_ENDIAN, instructions,
                 instructions.length - 16);
         writeInt((int) targetEntry, ByteOrder.LITTLE_ENDIAN, instructions,
@@ -106,7 +160,8 @@ public class Thumb2 extends ShellCode {
 
     @Override
     public int sizeOfBridgeJump() {
-        return 15 * 4;
+//        return 15 * 4;
+        return 18 * 4;//add by gzh
     }
 
     @Override
